@@ -1,0 +1,315 @@
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+const ADMIN_TOKEN_KEY = "orbit_admin_token";
+
+export const setAdminToken = (token: string | null) => {
+  if (typeof window === "undefined") return;
+  if (token) {
+    window.localStorage.setItem(ADMIN_TOKEN_KEY, token);
+  } else {
+    window.localStorage.removeItem(ADMIN_TOKEN_KEY);
+  }
+};
+
+const getAdminToken = () => {
+  if (typeof window === "undefined") return "";
+  return window.localStorage.getItem(ADMIN_TOKEN_KEY) || "";
+};
+
+type ApiOptions = {
+  method?: "GET" | "POST" | "PUT";
+  body?: Record<string, unknown>;
+};
+
+async function adminRequest<T>(path: string, options: ApiOptions = {}) {
+  const { method = "GET", body } = options;
+  const token = getAdminToken();
+  const headers: Record<string, string> = {};
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  if (body) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  if (!res.ok) {
+    let message = "Request failed";
+    try {
+      const data = await res.json();
+      message = data?.message || message;
+    } catch (_) {
+      // ignore parse errors
+    }
+    throw new Error(message);
+  }
+
+  return (await res.json()) as T;
+}
+
+export const loginAdmin = async (email: string, password: string) => {
+  const res = await fetch(`${API_BASE_URL}/api/admin/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  if (!res.ok) {
+    let message = "Login failed";
+    try {
+      const data = await res.json();
+      message = data?.message || message;
+    } catch (_) {
+      // ignore parse errors
+    }
+    throw new Error(message);
+  }
+  const data = (await res.json()) as { token: string };
+  setAdminToken(data.token);
+  return data;
+};
+
+export const getAdminMe = () =>
+  adminRequest<{ admin: AdminUser }>("/api/admin/auth/me");
+
+export type Store = {
+  id: string;
+  name: string;
+  subdomain: string;
+  customDomain?: string | null;
+  isActive: boolean;
+  onboardingStatus: string;
+  createdAt: string;
+  lastOnboardingActivityAt?: string | null;
+  onboarding?: {
+    status: string;
+    currentStep: number;
+    completionPercent: number;
+    stepData?: Record<string, unknown>;
+    startedAt?: string | null;
+    completedAt?: string | null;
+  } | null;
+};
+
+export type AdminUser = {
+  id: string;
+  email: string;
+  fullName?: string | null;
+  role?: string;
+  isActive?: boolean;
+};
+
+export type SupportTicket = {
+  id: string;
+  subject: string;
+  summary?: string | null;
+  status: string;
+  source?: string | null;
+  store?: Store | null;
+  assignedAdmin?: AdminUser | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TicketMessage = {
+  id: string;
+  ticketId: string;
+  senderType: string;
+  adminId?: string | null;
+  message: string;
+  createdAt: string;
+};
+
+export type TicketNote = {
+  id: string;
+  ticketId: string;
+  adminId: string;
+  note: string;
+  createdAt: string;
+};
+
+export type CommunicationLog = {
+  id: string;
+  channel: string;
+  direction: string;
+  summary: string;
+  occurredAt: string;
+  createdAt: string;
+};
+
+export type CallLog = {
+  id: string;
+  channel: string;
+  notes: string;
+  occurredAt: string;
+  createdAt: string;
+};
+
+export type BrandOnboardingDetails = {
+  store: Store & {
+    user?: { email?: string; fullName?: string | null };
+    onboardingSteps?: Array<{
+      stepKey: string;
+      status: string;
+      completedAt?: string | null;
+      updatedAt?: string | null;
+    }>;
+    activityLogs?: Array<{ action: string; createdAt: string }>;
+  };
+  onboarding: Store["onboarding"];
+  missingFields: Record<string, string[]>;
+};
+
+export type PlatformMetrics = {
+  stores: number;
+  activeStores: number;
+  merchants: number;
+  orders: number;
+  revenue: number;
+  averageOrderValue: number;
+};
+
+export type OnboardingFunnelMetrics = {
+  totalStores: number;
+  statusSummary: Record<string, number>;
+  stepSummary: Record<string, Record<string, number>>;
+};
+
+export const getBrands = (params?: { isActive?: boolean }) => {
+  const search = new URLSearchParams();
+  if (typeof params?.isActive === "boolean") {
+    search.set("isActive", String(params.isActive));
+  }
+  const query = search.toString();
+  return adminRequest<{ stores: Store[] }>(
+    `/api/admin/brands${query ? `?${query}` : ""}`
+  );
+};
+
+export const getBrandOnboardingDetails = (brandId: string) =>
+  adminRequest<BrandOnboardingDetails>(
+    `/api/admin/brands/${brandId}/onboarding/details`
+  );
+
+export const getBrandActivity = (brandId: string) =>
+  adminRequest<{ logs: Array<{ action: string; createdAt: string }> }>(
+    `/api/admin/brands/${brandId}/activity`
+  );
+
+export const getPlatformMetrics = () =>
+  adminRequest<{ metrics: PlatformMetrics }>("/api/admin/analytics/platform");
+
+export const getBrandMetrics = (brandId: string) =>
+  adminRequest<{ metrics: Record<string, unknown> }>(
+    `/api/admin/analytics/brands/${brandId}`
+  );
+
+export const getPlatformAggregates = (params?: {
+  periodType?: string;
+  start?: string;
+  end?: string;
+}) => {
+  const search = new URLSearchParams();
+  if (params?.periodType) search.set("periodType", params.periodType);
+  if (params?.start) search.set("start", params.start);
+  if (params?.end) search.set("end", params.end);
+  const query = search.toString();
+  return adminRequest<{ aggregates: Array<Record<string, unknown>> }>(
+    `/api/admin/analytics/aggregates${query ? `?${query}` : ""}`
+  );
+};
+
+export const getOnboardingFunnel = () =>
+  adminRequest<{ metrics: OnboardingFunnelMetrics }>(
+    "/api/admin/analytics/onboarding-funnel"
+  );
+
+export const getInactiveOnboarding = (days = 7) =>
+  adminRequest<{ stores: Store[]; inactivityDays: number }>(
+    `/api/admin/onboarding/inactive?days=${days}`
+  );
+
+export const getBrandDetail = (storeId: string) =>
+  adminRequest<BrandOnboardingDetails>(`/api/admin/brands/${storeId}`);
+
+export const getUsers = () =>
+  adminRequest<{ users: AdminUser[] }>("/api/admin/users");
+
+export const getStores = () =>
+  adminRequest<{ stores: Store[] }>("/api/admin/stores");
+
+export const getTickets = (params?: {
+  status?: string;
+  storeId?: string;
+  assignedAdminId?: string;
+}) => {
+  const search = new URLSearchParams();
+  if (params?.status) search.set("status", params.status);
+  if (params?.storeId) search.set("storeId", params.storeId);
+  if (params?.assignedAdminId)
+    search.set("assignedAdminId", params.assignedAdminId);
+  const query = search.toString();
+  return adminRequest<{ tickets: SupportTicket[] }>(
+    `/api/admin/tickets${query ? `?${query}` : ""}`
+  );
+};
+
+export const getTicket = (ticketId: string) =>
+  adminRequest<{
+    ticket: SupportTicket;
+    messages: TicketMessage[];
+    notes: TicketNote[];
+  }>(`/api/admin/tickets/${ticketId}`);
+
+export const respondToTicket = (ticketId: string, message: string) =>
+  adminRequest<{ ticket: SupportTicket }>(`/api/admin/tickets/${ticketId}/respond`, {
+    method: "POST",
+    body: { message },
+  });
+
+export const addTicketNote = (ticketId: string, note: string) =>
+  adminRequest<{ note: TicketNote }>(`/api/admin/tickets/${ticketId}/notes`, {
+    method: "POST",
+    body: { note },
+  });
+
+export const resolveTicket = (ticketId: string) =>
+  adminRequest<{ ticket: SupportTicket }>(`/api/admin/tickets/${ticketId}/resolve`, {
+    method: "POST",
+  });
+
+export const getBrandCommunications = (brandId: string) =>
+  adminRequest<{ communications: CommunicationLog[] }>(
+    `/api/admin/brands/${brandId}/communications`
+  );
+
+export const getBrandCalls = (brandId: string) =>
+  adminRequest<{ calls: CallLog[] }>(`/api/admin/brands/${brandId}/calls`);
+
+export const createBrandCommunication = (
+  brandId: string,
+  payload: { channel: string; summary: string }
+) =>
+  adminRequest<{ communication: CommunicationLog }>(
+    `/api/admin/brands/${brandId}/communications`,
+    {
+      method: "POST",
+      body: payload,
+    }
+  );
+
+export const createBrandCall = (
+  brandId: string,
+  payload: { channel: string; notes: string }
+) =>
+  adminRequest<{ call: CallLog }>(`/api/admin/brands/${brandId}/calls`, {
+    method: "POST",
+    body: payload,
+  });
