@@ -690,7 +690,7 @@ SOFTWARE.
 ### Reporting Bugs
 
 When reporting bugs, please include:
-- Clear description of the issue
+- Clear description of the issueaort
 - Steps to reproduce
 - Expected vs actual behavior
 - Environment details (OS, Node version, etc.)

@@ -36,6 +36,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { getBrandDetail, getBrandMetrics } from "@/lib/admin-api"
+import { MerchantActivationModal } from "@/components/MerchantActivationModal"
 
 type MerchantDetail = {
     id: string
@@ -110,7 +111,7 @@ export default function MerchantDetailPage() {
                     })) || []
                 setMerchant({
                     id: store.id,
-                    logo: store.logo,
+                    logo: (store as any).logo,
                     brandName: store.name,
                     status: store.isActive ? "live" : "paused",
                     subscriptionPlan: "Not provided",
@@ -200,10 +201,23 @@ export default function MerchantDetailPage() {
                             Back to Merchants
                         </Button>
                         <div className="flex items-center gap-2">
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" onClick={() => router.push(`/dashboard/communication?brand=${merchant.id}`)}>
                                 <Mail className="mr-2 h-4 w-4" />
                                 Contact Merchant
                             </Button>
+                            
+                            {/* NEW: Activation Flow */}
+                            {merchant.status === "pending" && (
+                                <MerchantActivationModal 
+                                    brandId={merchant.id} 
+                                    brandName={merchant.brandName} 
+                                    onSuccess={() => {
+                                        // Refresh data
+                                        window.location.reload()
+                                    }}
+                                />
+                            )}
+                            
                             <Button variant="outline" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">
                                 <Pause className="mr-2 h-4 w-4" />
                                 Pause Store
@@ -287,8 +301,8 @@ export default function MerchantDetailPage() {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                                        {merchant.onboardingSteps.map((step) => (
-                                            <div key={step.id} className="flex items-center justify-between p-2 rounded-lg border bg-muted/30">
+                                        {merchant.onboardingSteps.map((step, idx) => (
+                                            <div key={idx} className="flex items-center justify-between p-2 rounded-lg border bg-muted/30">
                                                 <div className="flex items-center gap-3">
                                                     {step.completed ? (
                                                         <CheckCircle2 className="h-5 w-5 text-green-500" />
@@ -401,7 +415,7 @@ export default function MerchantDetailPage() {
                                     {merchant.inventory.topSelling.length > 0 ? (
                                         merchant.inventory.topSelling.map((p, i) => (
                                             <div key={i} className="flex items-center justify-between text-sm p-2 rounded border bg-muted/20">
-                                                <span>{p}</span>
+                                                <span>{p.name} ({p.units} units)</span>
                                                 <TrendingUp className="h-4 w-4 text-green-500" />
                                             </div>
                                         ))

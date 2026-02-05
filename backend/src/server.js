@@ -19,6 +19,7 @@ const adminRoutes = require('./routes/admin');
 const metaOAuthRoutes = require('./routes/metaOAuth');
 const metaRoutes = require('./routes/meta');
 const onboardingRoutes = require('./routes/onboarding');
+const provisioningRoutes = require('./routes/provisioning');
 
 const app = express();
 
@@ -45,6 +46,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/auth/meta', metaOAuthRoutes);
 app.use('/api/meta', metaRoutes);
 app.use('/api/onboarding', onboardingRoutes);
+app.use('/api/provisioning', provisioningRoutes);
 app.use('/uploads', express.static(env.upload.path));
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));

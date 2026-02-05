@@ -41,12 +41,12 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: LayoutDashboardIcon,
     },
     {
       title: "Lifecycle",
-      url: "#",
+      url: "/dashboard/lifecycle",
       icon: ListIcon,
     },
     {
@@ -56,12 +56,12 @@ const data = {
     },
     {
       title: "Projects",
-      url: "#",
+      url: "/dashboard/projects",
       icon: FolderIcon,
     },
     {
       title: "Team",
-      url: "#",
+      url: "/dashboard/team",
       icon: UsersIcon,
     },
     {
@@ -91,52 +91,23 @@ const data = {
     },
   ],
   navClouds: [
-    {
-      title: "Capture",
-      icon: CameraIcon,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: FileTextIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: FileCodeIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
+    // Commented out until these features are implemented
+    // {
+    //   title: "Capture",
+    //   icon: CameraIcon,
+    //   isActive: true,
+    //   url: "/dashboard/capture",
+    //   items: [
+    //     {
+    //       title: "Active Proposals",
+    //       url: "/dashboard/capture/active",
+    //     },
+    //     {
+    //       title: "Archived",
+    //       url: "/dashboard/capture/archived",
+    //     },
+    //   ],
+    // },
   ],
   navSecondary: [
     {
@@ -144,33 +115,35 @@ const data = {
       url: "/dashboard/settings",
       icon: SettingsIcon,
     },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: HelpCircleIcon,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: SearchIcon,
-    },
+    // Commented out until implemented
+    // {
+    //   title: "Get Help",
+    //   url: "/dashboard/help",
+    //   icon: HelpCircleIcon,
+    // },
+    // {
+    //   title: "Search",
+    //   url: "/dashboard/search",
+    //   icon: SearchIcon,
+    // },
   ],
   documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: DatabaseIcon,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: ClipboardListIcon,
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: FileIcon,
-    },
+    // Commented out until these features are implemented
+    // {
+    //   name: "Data Library",
+    //   url: "/dashboard/data-library",
+    //   icon: DatabaseIcon,
+    // },
+    // {
+    //   name: "Reports",
+    //   url: "/dashboard/reports",
+    //   icon: ClipboardListIcon,
+    // },
+    // {
+    //   name: "Word Assistant",
+    //   url: "/dashboard/word-assistant",
+    //   icon: FileIcon,
+    // },
   ],
 }
 
@@ -221,7 +194,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        {data.documents.length > 0 && <NavDocuments items={data.documents} />}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

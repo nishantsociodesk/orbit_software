@@ -1,6 +1,107 @@
 const { prisma } = require('../config/database');
 const { getStoreAnalytics } = require('../services/analyticsService');
 
+// Register a new store (public merchant onboarding)
+const registerStore = async (req, res, next) => {
+  try {
+    const {
+      name,
+      email,
+      phone,
+      category,
+      address,
+      city,
+      country,
+      ownerFirstName,
+      ownerLastName,
+    } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !category) {
+      return res.status(400).json({
+        success: false,
+        message: 'Business name, email, and category are required'
+      });
+    }
+
+    // Generate subdomain from business name
+    const subdomain = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    // Check if subdomain already exists
+    const existingStore = await prisma.store.findUnique({
+      where: { subdomain }
+    });
+
+    if (existingStore) {
+      return res.status(400).json({
+        success: false,
+        message: 'A store with this name already exists. Please choose a different name.'
+      });
+    }
+
+    // Check if email already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'An account with this email already exists. Please use a different email or login.'
+      });
+    }
+
+    // Create a temporary user for the store owner
+    const tempUser = await prisma.user.create({
+      data: {
+        email,
+        password: 'temp-password', // Will be updated during activation
+        fullName: `${ownerFirstName || ''} ${ownerLastName || ''}`.trim() || 'Merchant',
+        role: 'MERCHANT',
+      }
+    });
+
+    // Create the store
+    const store = await prisma.store.create({
+      data: {
+        userId: tempUser.id,
+        name,
+        subdomain,
+        description: category ? `${category} store` : '',
+        onboardingStatus: 'NOT_STARTED',
+        provisioningStatus: 'PENDING',
+      }
+    });
+
+    // Initialize onboarding record
+    await prisma.brandOnboarding.create({
+      data: {
+        storeId: store.id,
+        status: 'NOT_STARTED',
+        currentStep: 1,
+        completionPercent: 0,
+      }
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Store registered successfully. Awaiting admin approval.',
+      store: {
+        id: store.id,
+        name: store.name,
+        subdomain: store.subdomain,
+      }
+    });
+
+  } catch (error) {
+    console.error('Store registration error:', error);
+    next(error);
+  }
+};
+
 const createStore = async (req, res, next) => {
   try {
     const { name, subdomain, customDomain, description, logo } = req.body;
@@ -99,6 +200,7 @@ const storeAnalytics = async (req, res, next) => {
 };
 
 module.exports = {
+  registerStore,
   createStore,
   listStores,
   getStore,
@@ -108,3 +210,4 @@ module.exports = {
   updateSettings,
   storeAnalytics
 };
+

@@ -313,3 +313,32 @@ export const createBrandCall = (
     method: "POST",
     body: payload,
   });
+
+export const provisionBrand = (
+  brandId: string,
+  config: {
+    themeId: string;
+    planId: string;
+    subdomain: string;
+    category: string;
+    domain?: string;
+  }
+) =>
+  adminRequest<{
+    success: boolean;
+    dashboardUrl: string;
+    websiteUrl: string;
+  }>(`/api/admin/brands/${brandId}/provision`, {
+    method: "POST",
+    body: config,
+  });
+
+export const getThemes = () =>
+  adminRequest<{ themes: Array<{ id: string; name: string; slug: string }> }>(
+    "/api/admin/themes"
+  );
+
+export const getPlans = () =>
+  adminRequest<{ plans: Array<{ id: string; name: string; slug: string }> }>(
+    "/api/admin/plans"
+  );

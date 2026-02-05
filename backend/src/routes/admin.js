@@ -1,4 +1,5 @@
 const express = require('express');
+const { prisma } = require('../config/database');
 const { body } = require('express-validator');
 const adminAuth = require('../middleware/adminAuth');
 const { adminRbac, ADMIN_ROLES } = require('../middleware/adminRbac');
@@ -26,7 +27,8 @@ const {
   getBrandOnboardingDetails,
   updateOnboarding,
   listInactiveOnboardingBrands,
-  listBrandActivity
+  listBrandActivity,
+  provisionBrand
 } = require('../controllers/adminBrandController');
 const {
   platformMetrics,
@@ -91,6 +93,7 @@ router.put(
   updateOnboarding
 );
 router.get('/brands/:id/activity', guard, listBrandActivity);
+router.post('/brands/:id/provision', guard, provisionBrand);
 router.get('/onboarding/inactive', guard, listInactiveOnboardingBrands);
 
 router.get('/analytics/platform', guard, platformMetrics);
@@ -146,5 +149,15 @@ router.post(
   withValidation([body('channel').notEmpty(), body('notes').notEmpty()]),
   createCall
 );
+
+router.get('/themes', guard, async (req, res) => {
+  const themes = await prisma.theme.findMany({ where: { isActive: true } });
+  res.json({ themes });
+});
+
+router.get('/plans', guard, async (req, res) => {
+  const plans = await prisma.plan.findMany({ where: { isActive: true } });
+  res.json({ plans });
+});
 
 module.exports = router;

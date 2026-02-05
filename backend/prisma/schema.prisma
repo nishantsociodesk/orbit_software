@@ -42,6 +42,12 @@ model Store {
   suspendedAt              DateTime?
   suspendedReason          String?
   layoutId     String?
+  themeId              String?
+  theme                Theme?                @relation(fields: [themeId], references: [id])
+  planId               String?
+  plan                 Plan?                 @relation(fields: [planId], references: [id])
+  provisioningStatus   ProvisioningStatus    @default(PENDING)
+  category             String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   products     Product[]
@@ -53,6 +59,8 @@ model Store {
   tickets            SupportTicket[]
   communicationLogs  CommunicationLog[]
   callLogs           SupportCallLog[]
+  provisioning       MerchantProvisioning?
+  deployment         DeploymentMetadata?
 }
 
 model BrandOnboarding {
@@ -377,4 +385,82 @@ enum FulfillmentStatus {
   FULFILLED
   SHIPPED
   DELIVERED
+}
+
+enum ProvisioningStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  ROLLBACK
+}
+
+model Theme {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  thumbnail   String?
+  version     String   @default("1.0.0")
+  isActive    Boolean  @default(true)
+  config      Json?
+  previewUrl  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  stores      Store[]
+}
+
+model Plan {
+  id              String   @id @default(uuid())
+  name            String
+  slug            String   @unique
+  description     String?
+  price           Decimal  @db.Decimal(10, 2)
+  billingCycle    String   @default("monthly")
+  features        Json
+  productLimit    Int?
+  orderLimit      Int?
+  storageLimit    Int?
+  bandwidthLimit  Int?
+  isActive        Boolean  @default(true)
+  isPopular       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  stores          Store[]
+}
+
+model MerchantProvisioning {
+  id                    String              @id @default(uuid())
+  storeId               String              @unique
+  store                 Store               @relation(fields: [storeId], references: [id])
+  status                ProvisioningStatus  @default(PENDING)
+  workspaceCreated      Boolean             @default(false)
+  dashboardCreated      Boolean             @default(false)
+  websiteDeployed       Boolean             @default(false)
+  dataInitialized       Boolean             @default(false)
+  credentialsSent       Boolean             @default(false)
+  currentStep           String?
+  completionPercent     Int                 @default(0)
+  errorLog              Json?
+  retryCount            Int                 @default(0)
+  startedAt             DateTime?
+  completedAt           DateTime?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+}
+
+model DeploymentMetadata {
+  id                String   @id @default(uuid())
+  storeId           String   @unique
+  store             Store    @relation(fields: [storeId], references: [id])
+  merchantId        String   @unique
+  tenantNamespace   String   @unique
+  dashboardUrl      String?
+  websiteUrl        String?
+  databaseName      String?
+  deploymentConfig  Json?
+  sslEnabled        Boolean  @default(false)
+  dnsConfigured     Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }

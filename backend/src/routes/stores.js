@@ -3,6 +3,7 @@ const { body } = require('express-validator');
 const auth = require('../middleware/auth');
 const { rbac, ROLES } = require('../middleware/rbac');
 const {
+  registerStore,
   createStore,
   listStores,
   getStore,
@@ -15,6 +16,17 @@ const {
 const { withValidation } = require('../middleware/validation');
 
 const router = express.Router();
+
+// Public route for merchant registration (no auth required)
+router.post(
+  '/register',
+  withValidation([
+    body('name').notEmpty().withMessage('Business name is required'),
+    body('email').isEmail().withMessage('Valid email is required'),
+    body('category').notEmpty().withMessage('Category is required')
+  ]),
+  registerStore
+);
 
 router.post(
   '/',

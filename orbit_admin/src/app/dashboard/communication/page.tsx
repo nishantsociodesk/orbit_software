@@ -258,7 +258,7 @@ export default function CommunicationPage() {
                                                 </div>
                                                 <div className="space-y-2">
                                                     <label className="text-sm font-medium">To</label>
-                                                    <Input value={selectedBrand?.name} disabled />
+                                                    <Input value={selectedBrand?.name || ""} disabled />
                                                 </div>
                                             </div>
                                             <div className="space-y-2">

@@ -97,6 +97,8 @@ const listInactiveOnboardingBrands = async (req, res, next) => {
   }
 };
 
+const provisioningService = require('../services/provisioningService');
+
 const listBrandActivity = async (req, res, next) => {
   try {
     const logs = await prisma.brandActivityLog.findMany({
@@ -110,6 +112,17 @@ const listBrandActivity = async (req, res, next) => {
   }
 };
 
+const provisionBrand = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const config = req.body;
+    const result = await provisioningService.provisionMerchant(id, config);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   listAllBrands,
   getBrand,
@@ -118,5 +131,6 @@ module.exports = {
   getBrandOnboardingDetails,
   updateOnboarding,
   listInactiveOnboardingBrands,
-  listBrandActivity
+  listBrandActivity,
+  provisionBrand
 };
