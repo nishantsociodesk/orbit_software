@@ -17,6 +17,7 @@ import {
   MessageSquare,
   MessageSquareMore,
   Palette,
+  RocketIcon,
   SearchIcon,
   SettingsIcon,
   UsersIcon,
@@ -68,6 +69,11 @@ const data = {
       title: "Brands",
       url: "/dashboard/brands",
       icon: ListIcon,
+    },
+    {
+      title: "Provisioning",
+      url: "/dashboard/provisioning",
+      icon: RocketIcon,
     },
     {
       title: "Tickets",

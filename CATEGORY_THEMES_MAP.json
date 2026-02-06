@@ -1,0 +1,122 @@
+{
+  "categoryThemes": {
+    "Toys": {
+      "themes": [
+        {
+          "value": "toys_main",
+          "label": "Toys Store - Main (Playful & Colorful)",
+          "path": "templates/orbit_front_others/toy upfront 2",
+          "port": 3004,
+          "default": true
+        },
+        {
+          "value": "toys_alt1",
+          "label": "Toys Store - Variant 2 (Fun & Engaging)",
+          "path": "templates/orbit_front_others/toy upfront 3",
+          "port": 3012
+        },
+        {
+          "value": "toys_alt2",
+          "label": "Toys Store - Variant 3 (Bright & Happy)",
+          "path": "templates/orbit_front_others/toys upfront",
+          "port": 3013
+        }
+      ]
+    },
+    "Fashion": {
+      "themes": [
+        {
+          "value": "fashion_main",
+          "label": "Fashion Store - Main (Elegant & Minimal)",
+          "path": "templates/orbit_front_others/fashion_upfront_2",
+          "port": 3005,
+          "default": true
+        },
+        {
+          "value": "fashion_alt",
+          "label": "Fashion Store - Variant 2 (Chic & Modern)",
+          "path": "templates/orbit_front_others/fashion_upfront",
+          "port": 3014
+        }
+      ]
+    },
+    "Electronics": {
+      "themes": [
+        {
+          "value": "electronics_main",
+          "label": "Electronics Store - Modern Tech",
+          "path": "templates/orbit_upfront",
+          "port": 3006,
+          "default": true
+        }
+      ]
+    },
+    "Food": {
+      "themes": [
+        {
+          "value": "food_main",
+          "label": "Food & Beverage - Provision & Co.",
+          "path": "templates/orbit_front_all",
+          "port": 3007,
+          "default": true
+        }
+      ]
+    },
+    "Footwear": {
+      "themes": [
+        {
+          "value": "footwear_main",
+          "label": "Footwear Store - Stylish",
+          "path": "templates/orbit_front_others/FOOTWEAR UPFRONT",
+          "port": 3008,
+          "default": true
+        }
+      ]
+    },
+    "Perfume": {
+      "themes": [
+        {
+          "value": "perfume_main",
+          "label": "Perfume Store - Theme 1 (Classic)",
+          "path": "templates/orbit-cosmetics-upfront/perfume-upfront",
+          "port": 3009,
+          "default": true
+        },
+        {
+          "value": "perfume_theme2",
+          "label": "Perfume Store - Theme 2 (Elegant)",
+          "path": "templates/orbit-cosmetics-upfront/perfume-upfront-theme2",
+          "port": 3015
+        },
+        {
+          "value": "perfume_theme3",
+          "label": "Perfume Store - Theme 3 (Luxurious)",
+          "path": "templates/orbit-cosmetics-upfront/perfume-upfront-theme3",
+          "port": 3016
+        }
+      ]
+    },
+    "Beauty": {
+      "themes": [
+        {
+          "value": "beauty_main",
+          "label": "Beauty & Personal Care - Elegant",
+          "path": "templates/orbit-cosmetics-upfront/beauty-personal-care-upfront",
+          "port": 3010,
+          "default": true
+        }
+      ]
+    },
+    "Furniture": {
+      "themes": [
+        {
+          "value": "furniture_main",
+          "label": "Furniture & Home - Natural",
+          "path": "templates/orbit-cosmetics-upfront/furniture-upfront",
+          "port": 3011,
+          "default": true
+        }
+      ]
+    }
+  }
+}

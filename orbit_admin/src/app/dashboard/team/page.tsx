@@ -13,7 +13,7 @@ const teamMembers = [
   { name: "Piyush Rathore", role: "CTO" },
   { name: "Sahil Solanki", role: "CMO" },
   { name: "Kishor Irnak", role: "COO" },
-  { name: "Shreya Signh chauhan", role: "Developer" },
+  { name: "Shreya Singh Chauhan", role: "Developer" },
   { name: "Priya Mahato", role: "Developer" },
 ]
 

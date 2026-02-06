@@ -6,15 +6,15 @@ const ADMIN_TOKEN_KEY = "orbit_admin_token";
 export const setAdminToken = (token: string | null) => {
   if (typeof window === "undefined") return;
   if (token) {
-    window.localStorage.setItem(ADMIN_TOKEN_KEY, token);
+    window.sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
   } else {
-    window.localStorage.removeItem(ADMIN_TOKEN_KEY);
+    window.sessionStorage.removeItem(ADMIN_TOKEN_KEY);
   }
 };
 
 const getAdminToken = () => {
   if (typeof window === "undefined") return "";
-  return window.localStorage.getItem(ADMIN_TOKEN_KEY) || "";
+  return window.sessionStorage.getItem(ADMIN_TOKEN_KEY) || "";
 };
 
 type ApiOptions = {
@@ -42,6 +42,15 @@ async function adminRequest<T>(path: string, options: ApiOptions = {}) {
   });
 
   if (!res.ok) {
+    if (res.status === 401) {
+      setAdminToken(null);
+      if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
+         // Optionally redirect, but might be better to let the consuming component handle it 
+         // or force a reload to trigger auth guard.
+         // For now, simple token clear is good.
+         // We could also dispatch a custom event if we want components to react immediately.
+      }
+    }
     let message = "Request failed";
     try {
       const data = await res.json();
@@ -342,3 +351,60 @@ export const getPlans = () =>
   adminRequest<{ plans: Array<{ id: string; name: string; slug: string }> }>(
     "/api/admin/plans"
   );
+
+// Provisioning APIs
+export const getPendingMerchants = () =>
+  adminRequest<{ 
+    success: boolean; 
+    merchants: Array<Store & { user: AdminUser; onboarding: unknown }> 
+  }>("/api/admin/provisioning/pending");
+
+export const getProvisioningDetails = (storeId: string) =>
+  adminRequest<{ 
+    success: boolean; 
+    store: Store & { 
+      user: AdminUser; 
+      theme: unknown; 
+      websiteCustomization: unknown;
+      onboarding: unknown;
+      plan: unknown;
+    } 
+  }>(`/api/admin/provisioning/${storeId}`);
+
+export const provisionMerchant = (
+  storeId: string,
+  payload: { themeId: string; planId?: string }
+) =>
+  adminRequest<{
+    success: boolean;
+    message: string;
+    store: {
+      id: string;
+      name: string;
+      subdomain: string;
+      storefront: string;
+      dashboard: string;
+      themeId: string;
+      provisioningStatus: 'COMPLETED' | 'PENDING' | 'IN_PROGRESS' | 'FAILED';
+    };
+  }>(`/api/admin/provisioning/${storeId}/provision`, {
+    method: "POST",
+    body: payload,
+  });
+
+export const updateMerchantDomain = (
+  storeId: string,
+  payload: { customDomain?: string }
+) =>
+  adminRequest<{
+    success: boolean;
+    store: {
+      id: string;
+      subdomain: string;
+      customDomain?: string;
+      storefront: string;
+    };
+  }>(`/api/admin/provisioning/${storeId}/domain`, {
+    method: "PUT",
+    body: payload,
+  });

@@ -20,6 +20,9 @@ const metaOAuthRoutes = require('./routes/metaOAuth');
 const metaRoutes = require('./routes/meta');
 const onboardingRoutes = require('./routes/onboarding');
 const provisioningRoutes = require('./routes/provisioning');
+const publicRoutes = require('./routes/public');
+const websiteCustomizationRoutes = require('./routes/websiteCustomization');
+const storefrontPublicRoutes = require('./routes/storefrontPublic');
 
 const app = express();
 
@@ -47,6 +50,9 @@ app.use('/auth/meta', metaOAuthRoutes);
 app.use('/api/meta', metaRoutes);
 app.use('/api/onboarding', onboardingRoutes);
 app.use('/api/provisioning', provisioningRoutes);
+app.use('/api/public', publicRoutes);
+app.use('/api/website', websiteCustomizationRoutes);
+app.use('/api/storefront/public', storefrontPublicRoutes);
 app.use('/uploads', express.static(env.upload.path));
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));

@@ -52,6 +52,17 @@ const {
   listCommunications,
   listCalls
 } = require('../controllers/adminCommunicationController');
+const {
+  getThemes,
+  getThemesByCategory,
+  getTheme
+} = require('../controllers/themeController');
+const {
+  listPendingMerchants,
+  provisionMerchant,
+  updateMerchantDomain,
+  getProvisioningDetails
+} = require('../controllers/adminProvisioningController');
 
 const router = express.Router();
 const guard = [adminAuth, adminRbac([ADMIN_ROLES.SUPER_ADMIN, ADMIN_ROLES.SUPPORT_ADMIN])];
@@ -150,14 +161,24 @@ router.post(
   createCall
 );
 
-router.get('/themes', guard, async (req, res) => {
-  const themes = await prisma.theme.findMany({ where: { isActive: true } });
-  res.json({ themes });
-});
+router.get('/themes', guard, getThemes);
+router.get('/themes/by-category', guard, getThemesByCategory);
+router.get('/themes/:id', guard, getTheme);
 
 router.get('/plans', guard, async (req, res) => {
   const plans = await prisma.plan.findMany({ where: { isActive: true } });
   res.json({ plans });
 });
+
+// Provisioning routes
+router.get('/provisioning/pending', guard, listPendingMerchants);
+router.get('/provisioning/:storeId', guard, getProvisioningDetails);
+router.post(
+  '/provisioning/:storeId/provision',
+  guard,
+  withValidation([body('themeId').notEmpty().withMessage('Theme ID is required')]),
+  provisionMerchant
+);
+router.put('/provisioning/:storeId/domain', guard, updateMerchantDomain);
 
 module.exports = router;

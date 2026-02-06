@@ -4,11 +4,16 @@ const {
   getProducts,
   getProduct,
   checkout,
-  getLayout
+  getLayout,
+  getStoreByDomain
 } = require('../controllers/storefrontController');
 
 const router = express.Router();
 
+// Domain resolution (supports both subdomain and custom domain)
+router.get('/resolve', getStoreByDomain);
+
+// Legacy subdomain routes
 router.get('/:subdomain', getStoreBySubdomain);
 router.get('/:subdomain/products', getProducts);
 router.get('/:subdomain/products/:id', getProduct);

@@ -142,10 +142,10 @@ const getStore = async (req, res, next) => {
 
 const updateStore = async (req, res, next) => {
   try {
-    const { name, description, logo, customDomain, isActive } = req.body;
+    const { name, description, logo, customDomain, isActive, category, theme } = req.body;
     const store = await prisma.store.update({
       where: { id: req.params.id },
-      data: { name, description, logo, customDomain, isActive }
+      data: { name, description, logo, customDomain, isActive, category, theme }
     });
     res.json({ store });
   } catch (err) {

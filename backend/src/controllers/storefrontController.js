@@ -2,6 +2,10 @@ const { prisma } = require('../config/database');
 const StoreLayout = require('../models/mongoose/StoreLayout');
 const { generateOrderNumber } = require('../utils/helpers');
 
+/**
+ * Resolve store by subdomain or custom domain
+ * Supports both subdomain.orbit360.com and custom domains
+ */
 const resolveStoreBySubdomain = async (subdomain) => {
   if (!subdomain) return null;
   if (subdomain === 'default') {
@@ -13,6 +17,43 @@ const resolveStoreBySubdomain = async (subdomain) => {
   return prisma.store.findFirst({
     where: { subdomain, isActive: true }
   });
+};
+
+/**
+ * Resolve store by custom domain or subdomain
+ * Checks custom domain first, then falls back to subdomain
+ */
+const resolveStoreByDomain = async (domain) => {
+  if (!domain) return null;
+  
+  // Try custom domain first
+  let store = await prisma.store.findFirst({
+    where: { 
+      customDomain: domain,
+      isActive: true 
+    },
+    include: {
+      theme: true,
+      websiteCustomization: true
+    }
+  });
+
+  // If not found, try subdomain (extract subdomain from domain)
+  if (!store) {
+    const subdomain = domain.split('.')[0];
+    store = await prisma.store.findFirst({
+      where: { 
+        subdomain,
+        isActive: true 
+      },
+      include: {
+        theme: true,
+        websiteCustomization: true
+      }
+    });
+  }
+
+  return store;
 };
 
 const getStoreBySubdomain = async (req, res, next) => {
@@ -91,4 +132,54 @@ const getLayout = async (req, res, next) => {
   }
 };
 
-module.exports = { getStoreBySubdomain, getProducts, getProduct, checkout, getLayout };
+/**
+ * Get store by domain (subdomain or custom domain)
+ * GET /api/storefront/resolve?domain=example.com
+ */
+const getStoreByDomain = async (req, res, next) => {
+  try {
+    const { domain } = req.query;
+    
+    if (!domain) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Domain parameter is required' 
+      });
+    }
+
+    const store = await resolveStoreByDomain(domain);
+    
+    if (!store) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Store not found for this domain' 
+      });
+    }
+
+    res.json({ 
+      success: true,
+      store: {
+        id: store.id,
+        name: store.name,
+        subdomain: store.subdomain,
+        customDomain: store.customDomain,
+        description: store.description,
+        logo: store.logo,
+        theme: store.theme,
+        customization: store.websiteCustomization
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { 
+  getStoreBySubdomain, 
+  getProducts, 
+  getProduct, 
+  checkout, 
+  getLayout,
+  getStoreByDomain,
+  resolveStoreByDomain
+};

@@ -43,7 +43,8 @@ model Store {
   suspendedReason          String?
   layoutId     String?
   themeId              String?
-  theme                Theme?                @relation(fields: [themeId], references: [id])
+  themeTemplate        Theme?                @relation(fields: [themeId], references: [id])
+  theme                String                @default("toys")
   planId               String?
   plan                 Plan?                 @relation(fields: [planId], references: [id])
   provisioningStatus   ProvisioningStatus    @default(PENDING)
@@ -53,6 +54,7 @@ model Store {
   products     Product[]
   orders       Order[]
   settings     StoreSettings?
+  websiteCustomization WebsiteCustomization?
   activityLogs       BrandActivityLog[]
   onboardingSteps    BrandOnboardingStep[]
   onboarding         BrandOnboarding?
@@ -216,6 +218,10 @@ model Product {
   sku            String?
   stock          Int              @default(0)
   images         String[]
+  category       String?
+  tags           String[]
+  isFeatured     Boolean          @default(false)
+  customFields   Json?            // Category-specific fields (size, color, brand, etc.)
   isActive       Boolean          @default(true)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
@@ -395,16 +401,29 @@ enum ProvisioningStatus {
   ROLLBACK
 }
 
+enum ThemeCategory {
+  CLOTHING
+  ELECTRONICS
+  TOYSTORE
+  FOOTWEAR
+  FOOD_BEVERAGE
+  COSMETICS
+  PERFUME
+  JEWELLERY
+}
+
 model Theme {
   id          String   @id @default(uuid())
   name        String
   slug        String   @unique
+  category    ThemeCategory?
   description String?
   thumbnail   String?
   version     String   @default("1.0.0")
   isActive    Boolean  @default(true)
   config      Json?
   previewUrl  String?
+  repository  String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   stores      Store[]
@@ -463,4 +482,25 @@ model DeploymentMetadata {
   dnsConfigured     Boolean  @default(false)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+}
+
+model WebsiteCustomization {
+  id              String   @id @default(uuid())
+  storeId         String   @unique
+  store           Store    @relation(fields: [storeId], references: [id])
+  logo            String?
+  favicon         String?
+  brandColors     Json?
+  typography      Json?
+  heroSection     Json?
+  aboutSection    Json?
+  contactInfo     Json?
+  headerStyle     String?
+  footerContent   Json?
+  metaTitle       String?
+  metaDescription String?
+  keywords        String[]
+  socialLinks     Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

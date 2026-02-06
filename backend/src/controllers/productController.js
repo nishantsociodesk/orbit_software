@@ -1,10 +1,46 @@
 const { prisma } = require('../config/database');
 
+// Helper to get user's store
+const getUserStore = async (userId) => {
+  const store = await prisma.store.findFirst({
+    where: { userId },
+    select: { id: true }
+  });
+  return store;
+};
+
 const createProduct = async (req, res, next) => {
   try {
-    const data = req.body;
+    const store = await getUserStore(req.user.id);
+    if (!store) {
+      return res.status(404).json({ message: 'Store not found' });
+    }
+
+    const data = {
+      ...req.body,
+      storeId: store.id,
+      slug: req.body.slug || req.body.name.toLowerCase().replace(/\s+/g, '-'),
+    };
+    
     const product = await prisma.product.create({ data });
     res.status(201).json({ product });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const listProducts = async (req, res, next) => {
+  try {
+    const store = await getUserStore(req.user.id);
+    if (!store) {
+      return res.status(404).json({ message: 'Store not found' });
+    }
+
+    const products = await prisma.product.findMany({
+      where: { storeId: store.id },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json({ products });
   } catch (err) {
     next(err);
   }
@@ -91,6 +127,7 @@ const deleteVariant = async (req, res, next) => {
 
 module.exports = {
   createProduct,
+  listProducts,
   listByStore,
   getProduct,
   updateProduct,

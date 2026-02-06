@@ -10,7 +10,17 @@ class ThemeService {
    * Create a new theme
    */
   async createTheme(data) {
-    const { name, slug, description, thumbnail, version, config, previewUrl } = data;
+    const {
+      name,
+      slug,
+      category,
+      description,
+      thumbnail,
+      version,
+      config,
+      previewUrl,
+      repository
+    } = data;
 
     // Check if slug already exists
     const existing = await prisma.theme.findUnique({
@@ -25,11 +35,13 @@ class ThemeService {
       data: {
         name,
         slug,
+        category,
         description,
         thumbnail,
         version: version || '1.0.0',
         config: config || {},
         previewUrl,
+        repository,
         isActive: true
       }
     });
@@ -91,17 +103,29 @@ class ThemeService {
    * Update theme
    */
   async updateTheme(id, data) {
-    const { name, description, thumbnail, version, config, previewUrl, isActive } = data;
+    const {
+      name,
+      category,
+      description,
+      thumbnail,
+      version,
+      config,
+      previewUrl,
+      repository,
+      isActive
+    } = data;
 
     const theme = await prisma.theme.update({
       where: { id },
       data: {
         ...(name && { name }),
+        ...(category !== undefined && { category }),
         ...(description !== undefined && { description }),
         ...(thumbnail && { thumbnail }),
         ...(version && { version }),
         ...(config && { config }),
         ...(previewUrl && { previewUrl }),
+        ...(repository && { repository }),
         ...(isActive !== undefined && { isActive })
       }
     });
