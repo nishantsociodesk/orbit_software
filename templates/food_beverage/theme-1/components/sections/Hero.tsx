@@ -13,15 +13,15 @@ export default function Hero() {
 
     const slides = [
         {
-            src: "/hero.png",
+            src: "https://images.unsplash.com/photo-1599490659213-e2b9527bb087?q=80&w=1200&auto=format&fit=crop",
             alt: "Premium Snacks and Beverages"
         },
         {
-            src: "/category-beverages.png",
+            src: "https://images.unsplash.com/photo-1544145945-f904253db0ad?q=80&w=1200&auto=format&fit=crop",
             alt: "Refreshing Artisanal Drinks"
         },
         {
-            src: "/category-snacks.png",
+            src: "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1200&auto=format&fit=crop",
             alt: "Gourmet Snack Platters"
         }
     ]
