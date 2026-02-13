@@ -77,17 +77,6 @@
         "accent": "#FFFFFF"
       }
     },
-    "furniture": {
-      "name": "Furniture & Home",
-      "path": "templates/orbit-cosmetics-upfront/furniture-upfront",
-      "port": 3011,
-      "description": "Natural - For furniture and home decor",
-      "colors": {
-        "primary": "#22543D",
-        "secondary": "#78350F",
-        "accent": "#F5F5DC"
-      }
-    },
     "jewellery": {
       "name": "Jewellery Store",
       "path": "templates/orbit_front_jewellery",
@@ -148,6 +137,24 @@
       "path": "templates/orbit-cosmetics-upfront/perfume-upfront-theme3",
       "port": 3016,
       "parent": "perfume"
+    },
+    "jewellery_alt1": {
+      "name": "Jewellery Store (Alt 1)",
+      "path": "all_upfront/Jewellery_Upfront",
+      "port": 3021,
+      "parent": "jewellery"
+    },
+    "jewellery_alt2": {
+      "name": "Jewellery Store (Alt 2)",
+      "path": "all_upfront/Jewellery_Upfront_2",
+      "port": 3022,
+      "parent": "jewellery"
+    },
+    "jewellery_alt3": {
+      "name": "Jewellery Store (Alt 3)",
+      "path": "all_upfront/jewellery-upfront-1",
+      "port": 3023,
+      "parent": "jewellery"
     }
   }
 }

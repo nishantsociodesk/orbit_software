@@ -438,7 +438,6 @@ enum ThemeCategory {
   COSMETICS
   PERFUME
   JEWELLERY
-  FURNITURE
 }
 
 model Theme {

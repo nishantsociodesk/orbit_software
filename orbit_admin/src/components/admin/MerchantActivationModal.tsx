@@ -71,7 +71,10 @@ export function MerchantActivationModal({
     integrations: {
       meta: false,
       stripe: false,
-      paypal: false,
+      payu: false,
+      cashfree: false,
+      razorpay: false,
+      phonepe: false,
       analytics: false,
     },
   });
@@ -324,20 +327,77 @@ export function MerchantActivationModal({
 
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="paypal"
-                    checked={formData.integrations.paypal}
+                    id="payu"
+                    checked={formData.integrations.payu}
                     onCheckedChange={(checked) =>
                       setFormData({
                         ...formData,
-                        integrations: { ...formData.integrations, paypal: checked as boolean },
+                        integrations: { ...formData.integrations, payu: checked as boolean },
                       })
                     }
                   />
                   <label
-                    htmlFor="paypal"
+                    htmlFor="payu"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    PayPal
+                    PayU
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="cashfree"
+                    checked={formData.integrations.cashfree}
+                    onCheckedChange={(checked) =>
+                      setFormData({
+                        ...formData,
+                        integrations: { ...formData.integrations, cashfree: checked as boolean },
+                      })
+                    }
+                  />
+                  <label
+                    htmlFor="cashfree"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Cashfree
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="razorpay"
+                    checked={formData.integrations.razorpay}
+                    onCheckedChange={(checked) =>
+                      setFormData({
+                        ...formData,
+                        integrations: { ...formData.integrations, razorpay: checked as boolean },
+                      })
+                    }
+                  />
+                  <label
+                    htmlFor="razorpay"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Razorpay
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="phonepe"
+                    checked={formData.integrations.phonepe}
+                    onCheckedChange={(checked) =>
+                      setFormData({
+                        ...formData,
+                        integrations: { ...formData.integrations, phonepe: checked as boolean },
+                      })
+                    }
+                  />
+                  <label
+                    htmlFor="phonepe"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    PhonePe
                   </label>
                 </div>
 

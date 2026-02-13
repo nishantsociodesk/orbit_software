@@ -569,6 +569,61 @@ class ThemeService {
           layout: 'grid',
           features: ['trending-shoes', 'seasonal-collection', 'size-finder', 'style-guide']
         }
+      },
+      // Jewellery Themes
+      {
+        name: 'Jewellery Storefront 1',
+        slug: 'jewellery-1',
+        category: 'JEWELLERY',
+        description: 'Luxury jewellery store with elegant design',
+        version: '1.0.0',
+        previewUrl: '/themes/Jewellery_Upfront/preview.png',
+        repository: 'Jewellery_Upfront',
+        config: {
+          colors: {
+            primary: '#7C2D12',
+            secondary: '#FDE68A',
+            accent: '#111827'
+          },
+          layout: 'grid',
+          features: ['luxury-collections', 'gift-wrap', 'product-zoom']
+        }
+      },
+      {
+        name: 'Jewellery Storefront 2',
+        slug: 'jewellery-2',
+        category: 'JEWELLERY',
+        description: 'Modern premium jewellery store with minimalist design',
+        version: '1.0.0',
+        previewUrl: '/themes/Jewellery_Upfront_2/preview.png',
+        repository: 'Jewellery_Upfront_2',
+        config: {
+          colors: {
+            primary: '#7C2D12',
+            secondary: '#FDE68A',
+            accent: '#111827'
+          },
+          layout: 'grid',
+          features: ['modern-collections', 'quick-view', 'wishlist-feature']
+        }
+      },
+      {
+        name: 'Jewellery Storefront 3',
+        slug: 'jewellery-3',
+        category: 'JEWELLERY',
+        description: 'Elite jewellery store with luxury design and dark theme',
+        version: '1.0.0',
+        previewUrl: '/themes/jewellery-upfront-1/preview.png',
+        repository: 'jewellery-upfront-1',
+        config: {
+          colors: {
+            primary: '#D4AF37',
+            secondary: '#1A1A1A',
+            accent: '#FFFFFF'
+          },
+          layout: 'grid',
+          features: ['gift-section', 'quality-story', 'product-carousel']
+        }
       }
     ];
 

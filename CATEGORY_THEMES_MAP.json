@@ -125,17 +125,6 @@
         }
       ]
     },
-    "Furniture": {
-      "themes": [
-        {
-          "value": "furniture_main",
-          "label": "Furniture & Home - Natural",
-          "path": "templates/orbit-cosmetics-upfront/furniture-upfront",
-          "port": 3011,
-          "default": true
-        }
-      ]
-    },
     "Jewellery": {
       "themes": [
         {
@@ -144,6 +133,24 @@
           "path": "templates/orbit_front_jewellery",
           "port": 3017,
           "default": true
+        },
+        {
+          "value": "jewellery_alt1",
+          "label": "Jewellery Store - Variant 1",
+          "path": "all_upfront/Jewellery_Upfront",
+          "port": 3021
+        },
+        {
+          "value": "jewellery_alt2",
+          "label": "Jewellery Store - Variant 2",
+          "path": "all_upfront/Jewellery_Upfront_2",
+          "port": 3022
+        },
+        {
+          "value": "jewellery_alt3",
+          "label": "Jewellery Store - Variant 3",
+          "path": "all_upfront/jewellery-upfront-1",
+          "port": 3023
         }
       ]
     }

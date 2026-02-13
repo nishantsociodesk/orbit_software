@@ -314,6 +314,43 @@ const getCustomers = async (req, res, next) => {
   }
 };
 
+// Get sections data for Visual Editor
+const getSections = async (req, res, next) => {
+  try {
+    const storeId = req.params.id;
+    
+    // Get the store to determine its category
+    const store = await prisma.store.findUnique({
+      where: { id: storeId },
+      select: { category: true }
+    });
+    
+    if (!store) {
+      return res.status(404).json({ message: 'Store not found' });
+    }
+    
+    // Get the website customization data
+    const customization = await prisma.websiteCustomization.findUnique({
+      where: { storeId },
+      select: { productSections: true }
+    });
+    
+    // Get default theme configuration based on category
+    // In a real implementation, you might want to get this from a separate config service
+    // For now, we'll return the product sections from customization
+    const sections = customization?.productSections || [];
+    
+    res.json({ 
+      sections,
+      category: store.category,
+      success: true 
+    });
+  } catch (err) {
+    console.error('Get sections error:', err);
+    next(err);
+  }
+};
+
 module.exports = {
   registerStore,
   createStore,
@@ -325,6 +362,7 @@ module.exports = {
   updateSettings,
   storeAnalytics,
   getActivityLogs,
-  getCustomers
+  getCustomers,
+  getSections
 };
 

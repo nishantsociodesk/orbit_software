@@ -4,7 +4,8 @@
   "workspaces": [
     "apps/*",
     "backend",
-    "orbit_admin"
+    "orbit_admin",
+    "storefront"
   ],
   "scripts": {
     "build": "turbo build",
@@ -14,8 +15,11 @@
   },
   "packageManager": "npm@10.8.2",
   "devDependencies": {
-    "turbo": "latest",
     "prettier": "latest",
+    "turbo": "latest",
     "typescript": "latest"
+  },
+  "dependencies": {
+    "ws": "^8.19.0"
   }
 }

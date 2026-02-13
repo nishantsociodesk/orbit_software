@@ -6,8 +6,7 @@ const { metaAuth } = require('../middleware/metaAuth');
 const router = express.Router();
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 30,
-  keyGenerator: (req) => req.user?.id || req.ip
+  max: 30
 });
 
 router.get('/login', metaAuth, limiter, login);

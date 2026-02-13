@@ -303,9 +303,6 @@ const createMerchant = async (req, res, next) => {
 const listMerchantCredentials = async (req, res, next) => {
   try {
     const credentials = await prisma.merchantCredentials.findMany({
-      include: {
-        // We'll need to manually join since we don't have relations defined
-      },
       orderBy: {
         createdAt: 'desc'
       }

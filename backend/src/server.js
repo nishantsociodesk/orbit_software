@@ -2,10 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const http = require('http');
 const { publicLimiter, dashboardLimiter } = require('./middleware/rateLimit');
 const env = require('./config/env');
 const { connectMongo } = require('./config/database');
 const errorHandler = require('./middleware/errorHandler');
+const WebSocketService = require('./services/websocketService');
 
 const authRoutes = require('./routes/auth');
 const appAuthRoutes = require('./routes/appAuth');
@@ -64,7 +66,15 @@ app.use(errorHandler);
 const start = async () => {
   try {
     await connectMongo();
-    app.listen(env.port, () => {
+    
+    // Create HTTP server
+    const server = http.createServer(app);
+    
+    // Initialize WebSocket service
+    const websocketService = new WebSocketService(server);
+    
+    // Start listening
+    server.listen(env.port, () => {
       console.log(`Server running on port ${env.port}`);
     });
   } catch (err) {

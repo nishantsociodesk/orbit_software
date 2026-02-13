@@ -108,7 +108,7 @@ async function createTestMerchants() {
     }
 
     console.log('🎉 Done! Check pending merchants:');
-    console.log('   http://localhost:3002/dashboard/provisioning\n');
+    console.log('   http://localhost:3000/dashboard/provisioning\n');
 
   } catch (error) {
     console.error('❌ Error:', error.message);

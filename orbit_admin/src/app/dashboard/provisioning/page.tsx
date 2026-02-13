@@ -44,29 +44,44 @@ const CATEGORIES = [
   { value: "jewellery", label: "Jewellery" },
   { value: "food", label: "Food & Beverage" },
   { value: "perfume", label: "Perfume & Fragrance" },
-  { value: "cosmetics", label: "Cosmetics" },
-  { value: "furniture", label: "Furniture & Decor" },
+  { value: "cosmetics", label: "Cosmetics & Beauty" },
 ];
 
 const THEMES = [
-  { value: "fashion-upfront", label: "Fashion Style - Classic", category: "clothing" },
-  { value: "fashion-upfront-2", label: "Fashion Style - Modern", category: "clothing" },
-  { value: "footwear-upfront", label: "Footwear Pro - Sport", category: "footwear" },
-  { value: "toy-upfront", label: "Toy Store - Playful", category: "toys" },
-  { value: "toy-upfront-2", label: "Toy Store - Educational", category: "toys" },
-  { value: "toy-upfront-3", label: "Toy Store - Premium", category: "toys" },
-  { value: "perfume-upfront", label: "Fragrance Elite - Light", category: "perfume" },
-  { value: "perfume-upfront-theme2", label: "Fragrance Elite - Dark", category: "perfume" },
-  { value: "perfume-upfront-theme3", label: "Fragrance Elite - Luxury", category: "perfume" },
-  { value: "beauty-personal-care-upfront", label: "Beauty Glow - Upfront", category: "cosmetics" },
-  { value: "furniture-upfront", label: "Home Comfort - Upfront", category: "furniture" },
-  { value: "orbit_upfront", label: "Electronics 1 - Modern", category: "electronics" },
-  { value: "electronics_upfront_2", label: "Electronics 2 - Cyber", category: "electronics" },
-  { value: "electronics_upfront_3", label: "Electronics 3 - Pro", category: "electronics" },
-  { value: "food-upfront", label: "Gourmet Bites - Upfront", category: "food" },
-  { value: "food-upfront-theme-2", label: "Gourmet Bites - Upfront 2", category: "food" },
-  { value: "food-upfront-theme-3", label: "Gourmet Bites - Upfront 3", category: "food" },
-  { value: "jewellery-upfront", label: "Luxury Shine - Upfront", category: "jewellery" },
+  // Fashion
+  { value: "fashion_main", label: "Fashion Store - Classic", category: "clothing" },
+  { value: "fashion_alt", label: "Fashion Store - Modern", category: "clothing" },
+  
+  // Electronics
+  { value: "electronics_main", label: "Electronics Store - Modern Tech", category: "electronics" },
+  { value: "electronics_theme2", label: "Electronics Store - Pro", category: "electronics" },
+  
+  // Toys
+  { value: "toys_main", label: "Toy Store - Main", category: "toys" },
+  { value: "toys_alt1", label: "Toy Store - Fun", category: "toys" },
+  { value: "toys_alt2", label: "Toy Store - Premium", category: "toys" },
+  
+  // Footwear
+  { value: "footwear_main", label: "Footwear Style - Sport", category: "footwear" },
+  
+  // Jewellery
+  { value: "jewellery_main", label: "Jewellery Store - Luxury", category: "jewellery" },
+  { value: "jewellery_alt1", label: "Jewellery Store - Variant 1", category: "jewellery" },
+  { value: "jewellery_alt2", label: "Jewellery Store - Variant 2", category: "jewellery" },
+  { value: "jewellery_alt3", label: "Jewellery Store - Variant 3", category: "jewellery" },
+  
+  // Food
+  { value: "food_main", label: "Gourmet Bites - Main", category: "food" },
+  { value: "food_theme2", label: "Gourmet Bites - Theme 2", category: "food" },
+  { value: "food_theme3", label: "Gourmet Bites - Theme 3", category: "food" },
+  
+  // Perfume
+  { value: "perfume_main", label: "Fragrance Elite - Classic", category: "perfume" },
+  { value: "perfume_theme2", label: "Fragrance Elite - Elegant", category: "perfume" },
+  { value: "perfume_theme3", label: "Fragrance Elite - Luxury", category: "perfume" },
+  
+  // Cosmetics
+  { value: "beauty_main", label: "Beauty Glow - Upfront", category: "cosmetics" },
 ];
 
 export default function ProvisioningPage() {

@@ -35,12 +35,87 @@ type SystemConfig = {
 }
 
 export default function SettingsPage() {
-    const [config, setConfig] = React.useState<SystemConfig[]>([])
+    const [config, setConfig] = React.useState<SystemConfig[]>([
+        {
+            key: "onboarding_enabled",
+            label: "Onboarding Flow",
+            description: "Enable or disable the merchant onboarding process",
+            value: true,
+            updated_at: "2024-01-15T10:30:00Z"
+        },
+        {
+            key: "analytics_enabled",
+            label: "Analytics Module",
+            description: "Enable advanced analytics and reporting features",
+            value: true,
+            updated_at: "2024-01-20T14:15:00Z"
+        },
+        {
+            key: "email_notifications",
+            label: "Email Notifications",
+            description: "Send automated email notifications for system events",
+            value: true,
+            updated_at: "2024-01-18T09:45:00Z"
+        },
+        {
+            key: "payment_processing",
+            label: "Payment Processing",
+            description: "Enable payment gateway integrations for merchants",
+            value: true,
+            updated_at: "2024-01-10T16:20:00Z"
+        },
+        {
+            key: "platform_version",
+            label: "Platform Version",
+            description: "Current version of the Orbit admin platform",
+            value: "v2.1.4",
+            updated_at: "2024-01-25T08:00:00Z"
+        },
+        {
+            key: "active_merchants",
+            label: "Active Merchants",
+            description: "Total number of active merchant accounts",
+            value: "142",
+            updated_at: "2024-01-25T12:30:00Z"
+        },
+        {
+            key: "uptime_percentage",
+            label: "System Uptime",
+            description: "Platform availability percentage over the last 30 days",
+            value: "99.8%",
+            updated_at: "2024-01-25T12:30:00Z"
+        },
+        {
+            key: "last_deployment",
+            label: "Last Deployment",
+            description: "Date and time of the most recent platform deployment",
+            value: "2024-01-25 14:30 UTC",
+            updated_at: "2024-01-25T14:30:00Z"
+        }
+    ])
+
+    const [saving, setSaving] = React.useState(false)
 
     const handleToggle = (key: string) => {
         setConfig(prev => prev.map(item =>
             item.key === key ? { ...item, value: !item.value, updated_at: new Date().toISOString() } : item
         ))
+    }
+
+    const handleSave = async () => {
+        setSaving(true)
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        setSaving(false)
+        // In a real app, you would save to backend here
+    }
+
+    const handleReset = () => {
+        setConfig(prev => prev.map(item => ({
+            ...item,
+            value: typeof item.value === 'boolean' ? true : item.value,
+            updated_at: new Date().toISOString()
+        })))
     }
 
     const featureToggles = config.filter(c => typeof c.value === 'boolean')
@@ -60,13 +135,22 @@ export default function SettingsPage() {
                             </p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" onClick={handleReset}>
                                 <RefreshCw className="mr-2 h-4 w-4" />
                                 Reset
                             </Button>
-                            <Button size="sm">
-                                <Save className="mr-2 h-4 w-4" />
-                                Save Changes
+                            <Button size="sm" onClick={handleSave} disabled={saving}>
+                                {saving ? (
+                                    <>
+                                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                                        Saving...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Save className="mr-2 h-4 w-4" />
+                                        Save Changes
+                                    </>
+                                )}
                             </Button>
                         </div>
                     </div>

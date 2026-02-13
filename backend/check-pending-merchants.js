@@ -71,7 +71,7 @@ async function checkPendingMerchants() {
       console.log('   Visit admin provisioning page to see it empty.\n');
     } else {
       console.log(`🎯 ${pendingCount} merchant(s) ready to provision!`);
-      console.log('   Go to: http://localhost:3002/dashboard/provisioning\n');
+      console.log('   Go to: http://localhost:3000/dashboard/provisioning\n');
     }
 
   } catch (error) {

@@ -7,6 +7,7 @@ const {
   getStoreCategories,
   getStoreTheme,
   resolveStoreByDomain,
+  getStoreSections,
   createPublicOrder,
   verifyPublicPayment
 } = require('../controllers/storefrontPublicController');

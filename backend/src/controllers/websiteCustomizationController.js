@@ -1,6 +1,7 @@
 const { prisma } = require('../config/database');
 const { invalidateStoreCustomization } = require('../services/cacheService');
 const { ensureStoreExists } = require('../services/storeService');
+const { getWebSocketService } = require('../services/globalWebSocketService');
 
 const resolveStoreId = async (req, createIfMissing = false) => {
   // If specific store requested (e.g. by admin)
@@ -95,16 +96,35 @@ const updateCustomization = async (req, res, next) => {
     }
 
     const updateData = req.body;
+    
+    // Process keywords for update operation - convert string to array if needed
+    const processedUpdateData = {
+      ...updateData,
+      keywords: Array.isArray(updateData.keywords) ? updateData.keywords : 
+             typeof updateData.keywords === 'string' ? updateData.keywords.split(',').map(k => k.trim()).filter(k => k) : 
+             []
+    };
+    
+    // Process keywords for create operation
     const createData = {
       storeId,
-      keywords: Array.isArray(updateData.keywords) ? updateData.keywords : [],
-      ...updateData
+      ...processedUpdateData
     };
+    
     const customization = await prisma.websiteCustomization.upsert({
       where: { storeId },
-      update: updateData,
+      update: processedUpdateData,
       create: createData
     });
+
+    // Broadcast update via WebSocket if service is available
+    const websocketService = getWebSocketService();
+    if (websocketService && customization.productSections) {
+      // Broadcast each section update
+      customization.productSections.forEach(section => {
+        websocketService.broadcastSectionUpdate(storeId, section.id, section);
+      });
+    }
 
     // Invalidate Cache
     const store = await prisma.store.findUnique({

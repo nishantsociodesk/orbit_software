@@ -13,7 +13,8 @@ const {
   updateSettings,
   storeAnalytics,
   getActivityLogs,
-  getCustomers
+  getCustomers,
+  getSections
 } = require('../controllers/storeController');
 const { withValidation } = require('../middleware/validation');
 
@@ -29,6 +30,9 @@ router.post(
   ]),
   registerStore
 );
+
+// Route to get sections data for Visual Editor
+router.get('/:id/sections', auth, rbac([ROLES.MERCHANT, ROLES.ADMIN]), getSections);
 
 router.post(
   '/',
