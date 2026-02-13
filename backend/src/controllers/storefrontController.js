@@ -117,6 +117,22 @@ const checkout = async (req, res, next) => {
       },
       include: { items: true }
     });
+
+    // Log activity for dashboard
+    await prisma.brandActivityLog.create({
+      data: {
+        storeId: store.id,
+        actorType: 'SYSTEM',
+        action: 'ORDER_PLACED',
+        metadata: { 
+          orderNumber: order.orderNumber,
+          total: order.total,
+          customerName: order.customerName,
+          customerEmail: order.customerEmail
+        }
+      }
+    });
+
     res.status(201).json({ order });
   } catch (err) {
     next(err);

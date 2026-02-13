@@ -11,7 +11,9 @@ const {
   deleteStore,
   getSettings,
   updateSettings,
-  storeAnalytics
+  storeAnalytics,
+  getActivityLogs,
+  getCustomers
 } = require('../controllers/storeController');
 const { withValidation } = require('../middleware/validation');
 
@@ -40,6 +42,8 @@ router.get('/:id', auth, getStore);
 router.put('/:id', auth, rbac([ROLES.MERCHANT, ROLES.ADMIN]), updateStore);
 router.delete('/:id', auth, rbac([ROLES.MERCHANT, ROLES.ADMIN]), deleteStore);
 router.get('/:id/analytics', auth, rbac([ROLES.MERCHANT, ROLES.ADMIN]), storeAnalytics);
+router.get('/:id/activity', auth, rbac([ROLES.MERCHANT, ROLES.ADMIN]), getActivityLogs);
+router.get('/:id/customers', auth, rbac([ROLES.MERCHANT, ROLES.ADMIN]), getCustomers);
 router.get('/:id/settings', auth, getSettings);
 router.put('/:id/settings', auth, updateSettings);
 

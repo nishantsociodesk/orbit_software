@@ -56,6 +56,10 @@ class ProvisioningService {
       const website = await this.deployWebsite(storeId, themeId, subdomain, domain);
       await this.updateProvisioningProgress(provisioning.id, 'WEBSITE_DEPLOYED', 60, { websiteDeployed: true });
 
+      // 5.5 Create initial theme customization
+      await this.createInitialCustomization(storeId, themeId);
+      await this.updateProvisioningProgress(provisioning.id, 'CUSTOMIZATION_CREATED', 70, { customizationCreated: true });
+
       // 6. Initialize default data
       await this.initializeDefaultData(storeId, category);
       await this.updateProvisioningProgress(provisioning.id, 'DATA_INITIALIZED', 80, { dataInitialized: true });
@@ -242,6 +246,57 @@ class ProvisioningService {
       url: websiteUrl,
       theme: theme.slug
     };
+  }
+
+  /**
+   * Create initial theme customization
+   */
+  async createInitialCustomization(storeId, themeId) {
+    // Create default customization based on theme
+    const customization = await prisma.websiteCustomization.upsert({
+      where: { storeId },
+      create: {
+        storeId,
+        themeId,
+        customizationData: {
+          storeName: 'New Store',
+          logo: '',
+          primaryColor: '#3B82F6',
+          secondaryColor: '#8B5CF6',
+          accentColor: '#10B981',
+          heroSection: {
+            title: 'Welcome to Our Store',
+            subtitle: 'Premium Products',
+            description: 'Discover amazing products curated just for you.',
+            badge: 'New Collection',
+            ctaText: 'Shop Now',
+            secondaryCtaText: 'Learn More',
+            imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2000&auto=format&fit=crop'
+          }
+        }
+      },
+      update: {
+        themeId,
+        customizationData: {
+          storeName: 'New Store',
+          logo: '',
+          primaryColor: '#3B82F6',
+          secondaryColor: '#8B5CF6',
+          accentColor: '#10B981',
+          heroSection: {
+            title: 'Welcome to Our Store',
+            subtitle: 'Premium Products',
+            description: 'Discover amazing products curated just for you.',
+            badge: 'New Collection',
+            ctaText: 'Shop Now',
+            secondaryCtaText: 'Learn More',
+            imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2000&auto=format&fit=crop'
+          }
+        }
+      }
+    });
+
+    console.log(`[Provisioning] Initial customization created for: ${storeId}`);
   }
 
   /**

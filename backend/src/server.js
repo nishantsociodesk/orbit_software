@@ -23,6 +23,8 @@ const provisioningRoutes = require('./routes/provisioning');
 const publicRoutes = require('./routes/public');
 const websiteCustomizationRoutes = require('./routes/websiteCustomization');
 const storefrontPublicRoutes = require('./routes/storefrontPublic');
+const logisticsRoutes = require('./routes/logistics');
+
 
 const app = express();
 
@@ -51,6 +53,8 @@ app.use('/api/provisioning', provisioningRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/website', websiteCustomizationRoutes);
 app.use('/api/storefront/public', storefrontPublicRoutes);
+app.use('/api/logistics', logisticsRoutes);
+
 app.use('/uploads', express.static(env.upload.path));
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));

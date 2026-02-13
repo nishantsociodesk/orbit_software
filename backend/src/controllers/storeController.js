@@ -145,8 +145,14 @@ const createStore = async (req, res, next) => {
   }
 };
 
+const { ensureStoreExists } = require('../services/storeService');
+
 const listStores = async (req, res, next) => {
   try {
+    // Ensure at least one store exists for this user
+    await ensureStoreExists(req.user);
+    
+    // Then list all stores
     const stores = await prisma.store.findMany({ where: { userId: req.user.id } });
     res.json({ stores });
   } catch (err) {
@@ -223,6 +229,91 @@ const storeAnalytics = async (req, res, next) => {
   }
 };
 
+const getActivityLogs = async (req, res, next) => {
+  try {
+    const logs = await prisma.brandActivityLog.findMany({
+      where: { storeId: req.params.id },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+      include: {
+        user: {
+          select: {
+            fullName: true,
+            email: true
+          }
+        }
+      }
+    });
+    res.json({ logs });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getCustomers = async (req, res, next) => {
+  try {
+    const storeId = req.params.id;
+    
+    // 1. Get registered customers from activity logs
+    const registrationLogs = await prisma.brandActivityLog.findMany({
+      where: {
+        storeId,
+        action: 'CUSTOMER_REGISTERED'
+      },
+      include: {
+        user: true
+      }
+    });
+
+    // 2. Get all orders to calculate total spend and find guest customers
+    const orders = await prisma.order.findMany({
+      where: { storeId }
+    });
+
+    const customersMap = new Map();
+
+    // Add registered customers to map
+    registrationLogs.forEach(log => {
+      if (log.user) {
+        customersMap.set(log.user.email, {
+          id: log.user.id,
+          name: log.user.fullName,
+          email: log.user.email,
+          joined: log.user.createdAt,
+          status: 'active',
+          orders: 0,
+          totalSpent: 0
+        });
+      }
+    });
+
+    // Add/Update info based on orders
+    orders.forEach(order => {
+      if (!customersMap.has(order.customerEmail)) {
+        // Guest customer
+        customersMap.set(order.customerEmail, {
+          id: `guest-${order.id}`,
+          name: order.customerName,
+          email: order.customerEmail,
+          joined: order.createdAt,
+          status: 'guest',
+          orders: 0,
+          totalSpent: 0
+        });
+      }
+
+      const customer = customersMap.get(order.customerEmail);
+      customer.orders += 1;
+      customer.totalSpent += Number(order.total);
+    });
+
+    const customers = Array.from(customersMap.values());
+    res.json({ customers });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   registerStore,
   createStore,
@@ -232,6 +323,8 @@ module.exports = {
   deleteStore,
   getSettings,
   updateSettings,
-  storeAnalytics
+  storeAnalytics,
+  getActivityLogs,
+  getCustomers
 };
 

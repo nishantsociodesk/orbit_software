@@ -358,10 +358,43 @@ export default function MerchantDetailPage() {
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-muted-foreground uppercase">Theme Configuration</label>
-                                            <div className="mt-1 p-2 bg-muted rounded font-mono text-[10px] overflow-x-auto">
-                                                {JSON.stringify(merchant.storeDetails.themeConfig, null, 2)}
+                                            <div className="flex items-center justify-between mb-1">
+                                                <label className="text-xs font-medium text-muted-foreground uppercase">Theme Configuration</label>
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="sm" 
+                                                    className="h-6 text-[10px]"
+                                                    onClick={async () => {
+                                                        try {
+                                                            // For now, this is a placeholder for real API integration
+                                                            // In a real app, we would call an endpoint to update customization
+                                                            alert("Configuration updated successfully! (Mock)");
+                                                        } catch (err) {
+                                                            alert("Failed to update configuration");
+                                                        }
+                                                    }}
+                                                >
+                                                    Save Changes
+                                                </Button>
                                             </div>
+                                            <textarea 
+                                                className="mt-1 w-full p-2 bg-muted rounded font-mono text-[10px] h-32 focus:outline-none focus:ring-1 focus:ring-primary"
+                                                defaultValue={JSON.stringify(merchant.storeDetails.themeConfig, null, 2)}
+                                                onChange={(e) => {
+                                                    try {
+                                                        const val = JSON.parse(e.target.value);
+                                                        setMerchant(prev => prev ? {
+                                                            ...prev,
+                                                            storeDetails: {
+                                                                ...prev.storeDetails,
+                                                                themeConfig: val
+                                                            }
+                                                        } : null);
+                                                    } catch (err) {
+                                                        // Invalid JSON, ignore
+                                                    }
+                                                }}
+                                            />
                                         </div>
                                     </div>
                                     <div className="space-y-4">
@@ -378,9 +411,14 @@ export default function MerchantDetailPage() {
                                             </Badge>
                                         </div>
                                         <Separator />
-                                        <Button variant="outline" className="w-full justify-start" size="sm">
-                                            <Settings className="mr-2 h-4 w-4" />
-                                            Manage Store Configuration
+                                        <Button 
+                                            variant="outline" 
+                                            className="w-full justify-start" 
+                                            size="sm"
+                                            onClick={() => window.open(`http://${merchant.storeDetails.url}`, '_blank')}
+                                        >
+                                            <ExternalLink className="mr-2 h-4 w-4" />
+                                            Preview Store
                                         </Button>
                                     </div>
                                 </CardContent>

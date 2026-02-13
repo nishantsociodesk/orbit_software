@@ -226,6 +226,7 @@ export type ProductItem = {
   price: string | number;
   stock: number;
   isActive: boolean;
+  category?: string | null;
   variants?: ProductVariant[];
 };
 

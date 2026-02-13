@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
 import {
   getStores,
   getAdminProducts,
@@ -139,62 +140,83 @@ export default function ProductsPage() {
             </Select>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-8">
             {loading && <p className="text-sm text-muted-foreground">Loading products...</p>}
             {!loading && products.length === 0 && (
               <p className="text-sm text-muted-foreground">No products found for this store.</p>
             )}
-            {products.map((product) => (
-              <div key={product.id} className="rounded-md border p-4">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div>
-                    <p className="font-semibold">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {formatCurrency(product.price)} · Stock {product.stock}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={stockDrafts[product.id] || ""}
-                      onChange={(event) =>
-                        setStockDrafts((prev) => ({ ...prev, [product.id]: event.target.value }))
-                      }
-                      className="w-24"
-                    />
-                    <Button variant="outline" onClick={() => updateStock(product.id)}>
-                      Update Stock
-                    </Button>
-                    {!product.isActive && <Badge variant="secondary">Inactive</Badge>}
-                  </div>
+            
+            {Object.entries(
+              products.reduce((acc, product) => {
+                const cat = product.category || "Uncategorized";
+                if (!acc[cat]) acc[cat] = [];
+                acc[cat].push(product);
+                return acc;
+              }, {} as Record<string, ProductItem[]>)
+            ).map(([category, categoryProducts]) => (
+              <div key={category} className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="px-3 py-1 text-sm font-semibold border-primary text-primary">
+                    Section: {category}
+                  </Badge>
+                  <Separator className="flex-1" />
                 </div>
-
-                {product.variants && product.variants.length > 0 && (
-                  <div className="mt-4 space-y-2">
-                    <p className="text-xs uppercase text-muted-foreground">Variants</p>
-                    {product.variants.map((variant) => (
-                      <div key={variant.id} className="flex flex-wrap items-center justify-between gap-4 border-t pt-3">
+                
+                <div className="grid grid-cols-1 gap-4">
+                  {categoryProducts.map((product) => (
+                    <div key={product.id} className="rounded-md border p-4 bg-card">
+                      <div className="flex flex-wrap items-center justify-between gap-4">
                         <div>
-                          <p className="text-sm font-medium">{variant.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {variant.price ? formatCurrency(variant.price) : "Uses base price"} · Stock {variant.stock}
+                          <p className="font-semibold">{product.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {formatCurrency(product.price)} · Stock {product.stock}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
                           <Input
-                            value={stockDrafts[variant.id] || ""}
+                            value={stockDrafts[product.id] || ""}
                             onChange={(event) =>
-                              setStockDrafts((prev) => ({ ...prev, [variant.id]: event.target.value }))
+                              setStockDrafts((prev) => ({ ...prev, [product.id]: event.target.value }))
                             }
                             className="w-24"
                           />
-                          <Button variant="outline" onClick={() => updateStock(variant.id, true)}>
-                            Update Variant
+                          <Button variant="outline" onClick={() => updateStock(product.id)}>
+                            Update Stock
                           </Button>
+                          {!product.isActive && <Badge variant="secondary">Inactive</Badge>}
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
+
+                      {product.variants && product.variants.length > 0 && (
+                        <div className="mt-4 space-y-2">
+                          <p className="text-xs uppercase text-muted-foreground">Variants</p>
+                          {product.variants.map((variant) => (
+                            <div key={variant.id} className="flex flex-wrap items-center justify-between gap-4 border-t pt-3">
+                              <div>
+                                <p className="text-sm font-medium">{variant.name}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {variant.price ? formatCurrency(variant.price) : "Uses base price"} · Stock {variant.stock}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  value={stockDrafts[variant.id] || ""}
+                                  onChange={(event) =>
+                                    setStockDrafts((prev) => ({ ...prev, [variant.id]: event.target.value }))
+                                  }
+                                  className="w-24"
+                                />
+                                <Button variant="outline" onClick={() => updateStock(variant.id, true)}>
+                                  Update Variant
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                   ))}
+                </div>
               </div>
             ))}
           </div>

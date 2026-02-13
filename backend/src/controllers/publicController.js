@@ -7,7 +7,7 @@ const getStoreBySubdomain = async (req, res, next) => {
     const store = await prisma.store.findFirst({
       where: { subdomain, isActive: true },
       include: {
-        theme: true,
+        themeTemplate: true,
         plan: true,
         deployment: true,
         categoryConfig: true,

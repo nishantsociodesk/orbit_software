@@ -221,49 +221,353 @@ class ThemeService {
    */
   async seedDefaultThemes() {
     const defaultThemes = [
+      // Food & Beverage Themes
       {
-        name: 'Upfront Modern',
-        slug: 'upfront-modern',
-        description: 'A clean and modern e-commerce theme with minimalist design',
+        name: 'Food & Beverage Storefront 1',
+        slug: 'food-beverage-1',
+        category: 'FOOD_BEVERAGE',
+        description: 'Modern food and beverage e-commerce theme with vibrant design',
         version: '1.0.0',
+        previewUrl: '/themes/food_1/preview.png',
+        repository: 'food_1',
         config: {
           colors: {
-            primary: '#4F46E5',
-            secondary: '#10B981',
-            accent: '#F59E0B'
+            primary: '#FF6B35',
+            secondary: '#2E7D32',
+            accent: '#FFD54F'
           },
           layout: 'grid',
-          features: ['mega-menu', 'quick-view', 'wishlist', 'compare']
+          features: ['category-explorer', 'deals-combos', 'trust-safety', 'limited-offer']
         }
       },
       {
-        name: 'Upfront Classic',
-        slug: 'upfront-classic',
-        description: 'Traditional e-commerce layout with proven conversion patterns',
+        name: 'Food & Beverage Storefront 2',
+        slug: 'food-beverage-2',
+        category: 'FOOD_BEVERAGE',
+        description: 'Elegant food delivery theme with restaurant-style layout',
         version: '1.0.0',
+        previewUrl: '/themes/food_2/preview.png',
+        repository: 'food_2',
         config: {
           colors: {
-            primary: '#1F2937',
-            secondary: '#3B82F6',
-            accent: '#EF4444'
+            primary: '#D32F2F',
+            secondary: '#1976D2',
+            accent: '#FFA000'
           },
-          layout: 'list',
-          features: ['sidebar-filter', 'breadcrumbs', 'reviews']
+          layout: 'grid',
+          features: ['menu-cards', 'chef-recommendations', 'quick-order']
         }
       },
       {
-        name: 'Upfront Minimal',
-        slug: 'upfront-minimal',
-        description: 'Ultra-minimal design focused on product photography',
+        name: 'Food & Beverage Storefront 3',
+        slug: 'food-beverage-3',
+        category: 'FOOD_BEVERAGE',
+        description: 'Premium gourmet food theme with sophisticated design',
         version: '1.0.0',
+        previewUrl: '/themes/food_3/preview.png',
+        repository: 'food_3',
         config: {
           colors: {
-            primary: '#000000',
-            secondary: '#FFFFFF',
-            accent: '#6B7280'
+            primary: '#455A64',
+            secondary: '#78909C',
+            accent: '#FF7043'
           },
-          layout: 'masonry',
-          features: ['fullscreen-images', 'minimal-ui', 'smooth-scroll']
+          layout: 'grid',
+          features: ['premium-featured', 'artisanal-collections', 'subscription-box']
+        }
+      },
+      // Electronics Themes
+      {
+        name: 'Electronics Storefront 1',
+        slug: 'electronics-1',
+        category: 'ELECTRONICS',
+        description: 'Tech-focused electronics theme with clean modern design',
+        version: '1.0.0',
+        previewUrl: '/themes/electronics_1/preview.png',
+        repository: 'electronics_1',
+        config: {
+          colors: {
+            primary: '#1976D2',
+            secondary: '#0097A7',
+            accent: '#FF4081'
+          },
+          layout: 'grid',
+          features: ['tech-specs', 'comparison-tool', 'warranty-info', 'tech-support']
+        }
+      },
+      {
+        name: 'Electronics Storefront 2',
+        slug: 'electronics-2',
+        category: 'ELECTRONICS',
+        description: 'Gaming and electronics theme with dark modern design',
+        version: '1.0.0',
+        previewUrl: '/themes/electronics_2/preview.png',
+        repository: 'electronics_2',
+        config: {
+          colors: {
+            primary: '#212121',
+            secondary: '#FF5722',
+            accent: '#7C4DFF'
+          },
+          layout: 'grid',
+          features: ['gaming-section', 'pc-builder', 'tech-reviews', 'deals-zone']
+        }
+      },
+      {
+        name: 'Electronics Storefront 3',
+        slug: 'electronics-3',
+        category: 'ELECTRONICS',
+        description: 'Professional electronics theme with business focus',
+        version: '1.0.0',
+        previewUrl: '/themes/electronics_3/preview.png',
+        repository: 'electronics_3',
+        config: {
+          colors: {
+            primary: '#37474F',
+            secondary: '#00BCD4',
+            accent: '#FF9800'
+          },
+          layout: 'grid',
+          features: ['business-solutions', 'bulk-orders', 'corporate-deals', 'support-center']
+        }
+      },
+      // Perfume Themes
+      {
+        name: 'Perfume Storefront',
+        slug: 'perfume-1',
+        category: 'PERFUME',
+        description: 'Elegant perfume theme with luxurious design',
+        version: '1.0.0',
+        previewUrl: '/themes/perfume-upfront/preview.png',
+        repository: 'perfume-upfront',
+        config: {
+          colors: {
+            primary: '#8E24AA',
+            secondary: '#FFD54F',
+            accent: '#F50057'
+          },
+          layout: 'grid',
+          features: ['scent-finder', 'gift-sets', 'luxury-collections', 'fragrance-notes']
+        }
+      },
+      {
+        name: 'Perfume Storefront Theme 2',
+        slug: 'perfume-2',
+        category: 'PERFUME',
+        description: 'Modern perfume theme with minimalist luxury design',
+        version: '1.0.0',
+        previewUrl: '/themes/perfume-upfront-theme2/preview.png',
+        repository: 'perfume-upfront-theme2',
+        config: {
+          colors: {
+            primary: '#3F51B5',
+            secondary: '#E91E63',
+            accent: '#FF9800'
+          },
+          layout: 'grid',
+          features: ['scent-profiles', 'personalized-recommendations', 'limited-editions']
+        }
+      },
+      {
+        name: 'Perfume Storefront Theme 3',
+        slug: 'perfume-3',
+        category: 'PERFUME',
+        description: 'Premium fragrance theme with artistic presentation',
+        version: '1.0.0',
+        previewUrl: '/themes/perfume-upfront-theme3/preview.png',
+        repository: 'perfume-upfront-theme3',
+        config: {
+          colors: {
+            primary: '#455A64',
+            secondary: '#FF5722',
+            accent: '#7E57C2'
+          },
+          layout: 'grid',
+          features: ['artist-collections', 'signature-scents', 'exclusive-launches', 'scent-journal']
+        }
+      },
+      // Fashion Themes
+      {
+        name: 'Fashion Storefront',
+        slug: 'fashion-1',
+        category: 'CLOTHING',
+        description: 'Trendy fashion theme with seasonal collections',
+        version: '1.0.0',
+        previewUrl: '/themes/fashion_upfront/preview.png',
+        repository: 'fashion_upfront',
+        config: {
+          colors: {
+            primary: '#E91E63',
+            secondary: '#9C27B0',
+            accent: '#FF9800'
+          },
+          layout: 'grid',
+          features: ['trending-now', 'seasonal-collections', 'style-guide', 'look-book']
+        }
+      },
+      {
+        name: 'Fashion Storefront 2',
+        slug: 'fashion-2',
+        category: 'CLOTHING',
+        description: 'Contemporary fashion theme with clean aesthetic',
+        version: '1.0.0',
+        previewUrl: '/themes/fashion_upfront_2/preview.png',
+        repository: 'fashion_upfront_2',
+        config: {
+          colors: {
+            primary: '#212121',
+            secondary: '#757575',
+            accent: '#FF4081'
+          },
+          layout: 'grid',
+          features: ['new-arrivals', 'best-sellers', 'style-inspiration', 'size-guide']
+        }
+      },
+      {
+        name: 'Fashion Storefront 3',
+        slug: 'fashion-3',
+        category: 'CLOTHING',
+        description: 'Premium fashion theme with editorial design',
+        version: '1.0.0',
+        previewUrl: '/themes/fashion upfront 3/preview.png',
+        repository: 'fashion upfront 3',
+        config: {
+          colors: {
+            primary: '#37474F',
+            secondary: '#FF5722',
+            accent: '#607D8B'
+          },
+          layout: 'grid',
+          features: ['editorial-features', 'designer-collections', 'fashion-stories', 'exclusive-access']
+        }
+      },
+      // Toys Themes
+      {
+        name: 'Toys Storefront',
+        slug: 'toys-1',
+        category: 'TOYSTORE',
+        description: 'Fun and playful toys theme for children and families',
+        version: '1.0.0',
+        previewUrl: '/themes/toys upfront/preview.png',
+        repository: 'toys upfront',
+        config: {
+          colors: {
+            primary: '#FF5722',
+            secondary: '#4CAF50',
+            accent: '#FFC107'
+          },
+          layout: 'grid',
+          features: ['age-groups', 'educational-toys', 'new-arrivals', 'deals-section']
+        }
+      },
+      {
+        name: 'Toys Storefront 2',
+        slug: 'toys-2',
+        category: 'TOYSTORE',
+        description: 'Interactive toys theme with engaging design',
+        version: '1.0.0',
+        previewUrl: '/themes/toy upfront 2/preview.png',
+        repository: 'toy upfront 2',
+        config: {
+          colors: {
+            primary: '#2196F3',
+            secondary: '#FF9800',
+            accent: '#9C27B0'
+          },
+          layout: 'grid',
+          features: ['interactive-demos', 'toy-reviews', 'parent-guides', 'safety-info']
+        }
+      },
+      {
+        name: 'Toys Storefront 3',
+        slug: 'toys-3',
+        category: 'TOYSTORE',
+        description: 'Premium toys theme with quality-focused design',
+        version: '1.0.0',
+        previewUrl: '/themes/toy upfront 3/preview.png',
+        repository: 'toy upfront 3',
+        config: {
+          colors: {
+            primary: '#3F51B5',
+            secondary: '#4CAF50',
+            accent: '#F44336'
+          },
+          layout: 'grid',
+          features: ['premium-brands', 'quality-assured', 'educational-value', 'parent-reviews']
+        }
+      },
+      // Beauty Themes
+      {
+        name: 'Beauty & Personal Care',
+        slug: 'beauty-1',
+        category: 'COSMETICS',
+        description: 'Gorgeous beauty theme with skincare focus',
+        version: '1.0.0',
+        previewUrl: '/themes/beauty-personal-care-upfront/preview.png',
+        repository: 'beauty-personal-care-upfront',
+        config: {
+          colors: {
+            primary: '#E91E63',
+            secondary: '#FF9800',
+            accent: '#9C27B0'
+          },
+          layout: 'grid',
+          features: ['skincare-routine', 'beauty-tips', 'ingredient-spotlight', 'virtual-try-on']
+        }
+      },
+      {
+        name: 'Beauty Theme 2',
+        slug: 'beauty-2',
+        category: 'COSMETICS',
+        description: 'Modern beauty theme with clean minimalist design',
+        version: '1.0.0',
+        previewUrl: '/themes/beauty-theme-2/preview.png',
+        repository: 'beauty-theme-2',
+        config: {
+          colors: {
+            primary: '#607D8B',
+            secondary: '#FF5722',
+            accent: '#4CAF50'
+          },
+          layout: 'grid',
+          features: ['clean-beauty', 'sustainable-choices', 'expert-picks', 'beauty-quiz']
+        }
+      },
+      {
+        name: 'Beauty Theme 3',
+        slug: 'beauty-3',
+        category: 'COSMETICS',
+        description: 'Luxury beauty theme with premium aesthetic',
+        version: '1.0.0',
+        previewUrl: '/themes/beauty-theme-3/preview.png',
+        repository: 'beauty-theme-3',
+        config: {
+          colors: {
+            primary: '#455A64',
+            secondary: '#FFD54F',
+            accent: '#7E57C2'
+          },
+          layout: 'grid',
+          features: ['luxury-brands', 'spa-treatments', 'premium-ingredients', 'beauty-consultations']
+        }
+      },
+      // Footwear Theme
+      {
+        name: 'Footwear Storefront',
+        slug: 'footwear-1',
+        category: 'FOOTWEAR',
+        description: 'Sleek footwear theme with fashion-forward design',
+        version: '1.0.0',
+        previewUrl: '/themes/FOOTWEAR UPFRONT/preview.png',
+        repository: 'FOOTWEAR UPFRONT',
+        config: {
+          colors: {
+            primary: '#212121',
+            secondary: '#757575',
+            accent: '#FF5722'
+          },
+          layout: 'grid',
+          features: ['trending-shoes', 'seasonal-collection', 'size-finder', 'style-guide']
         }
       }
     ];

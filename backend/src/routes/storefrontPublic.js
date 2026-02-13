@@ -5,7 +5,10 @@ const {
   getStoreProducts,
   getStoreProduct,
   getStoreCategories,
-  getStoreTheme
+  getStoreTheme,
+  resolveStoreByDomain,
+  createPublicOrder,
+  verifyPublicPayment
 } = require('../controllers/storefrontPublicController');
 const { cache } = require('../middleware/cache');
 
@@ -44,5 +47,12 @@ router.get('/:subdomain/categories', getStoreCategories);
 
 // Theme configuration
 router.get('/:subdomain/theme', getStoreTheme);
+
+// Domain resolution for storefront hub
+router.get('/resolve', resolveStoreByDomain);
+
+// Orders & Payments
+router.post('/:subdomain/orders', createPublicOrder);
+router.post('/:subdomain/orders/verify', verifyPublicPayment);
 
 module.exports = router;

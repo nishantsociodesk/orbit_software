@@ -1,15 +1,7 @@
 const { Prisma } = require('@prisma/client');
 const { prisma } = require('../config/database');
 const { invalidateStoreProducts } = require('../services/cacheService');
-
-// Helper to get user's store
-const getUserStore = async (userId) => {
-  const store = await prisma.store.findFirst({
-    where: { userId },
-    select: { id: true, subdomain: true, userId: true }
-  });
-  return store;
-};
+const { ensureStoreExists } = require('../services/storeService');
 
 const normalizeProductPayload = (payload = {}) => {
   const data = { ...payload };
@@ -63,7 +55,7 @@ const coerceProductNumbers = (data = {}) => {
 
 const createProduct = async (req, res, next) => {
   try {
-    const store = await getUserStore(req.user.id);
+    const store = await ensureStoreExists(req.user);
     if (!store) {
       return res.status(404).json({ message: 'Store not found' });
     }
@@ -100,7 +92,7 @@ const createProduct = async (req, res, next) => {
 
 const listProducts = async (req, res, next) => {
   try {
-    const store = await getUserStore(req.user.id);
+    const store = await ensureStoreExists(req.user);
     if (!store) {
       return res.status(404).json({ message: 'Store not found' });
     }

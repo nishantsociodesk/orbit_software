@@ -9,7 +9,7 @@ const templateSchema = new mongoose.Schema(
     isPremium: { type: Boolean, default: false },
     defaultSections: [
       {
-        type: String,
+        type: { type: String },
         config: mongoose.Schema.Types.Mixed
       }
     ],

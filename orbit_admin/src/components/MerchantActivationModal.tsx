@@ -35,6 +35,8 @@ export function MerchantActivationModal({ brandId, brandName, onSuccess }: Merch
     const [provisioning, setProvisioning] = React.useState(false)
     const [step, setStep] = React.useState<"config" | "progress" | "success">("config")
     const [themes, setThemes] = React.useState<any[]>([])
+    const [categories, setCategories] = React.useState<any[]>([])
+    const [selectedCategory, setSelectedCategory] = React.useState<string>("")
     const [plans, setPlans] = React.useState<any[]>([])
     
     const [config, setConfig] = React.useState({
@@ -61,8 +63,22 @@ export function MerchantActivationModal({ brandId, brandName, onSuccess }: Merch
             setThemes(tRes.themes)
             setPlans(pRes.plans)
             
+            // Define categories locally for now
+            const tempCategories = [
+              { id: 'electronics', name: 'Electronics' },
+              { id: 'fashion', name: 'Fashion' },
+              { id: 'beauty', name: 'Beauty' },
+              { id: 'food-beverage', name: 'Food & Beverage' },
+              { id: 'home-garden', name: 'Home & Garden' },
+              { id: 'others', name: 'Others' }
+            ];
+            setCategories(tempCategories);
+            
             if (tRes.themes.length > 0) setConfig(prev => ({ ...prev, themeId: tRes.themes[0].id }))
             if (pRes.plans.length > 0) setConfig(prev => ({ ...prev, planId: pRes.plans[0].id }))
+            
+            // Set first category if available
+            if (tempCategories.length > 0) setSelectedCategory(tempCategories[0].id)
         } catch (err) {
             console.error("Failed to load metadata", err)
         } finally {
@@ -127,16 +143,40 @@ export function MerchantActivationModal({ brandId, brandName, onSuccess }: Merch
                                     Theme
                                 </Label>
                                 <div className="col-span-3">
-                                    <Select value={config.themeId} onValueChange={(v) => setConfig({ ...config, themeId: v })}>
+                                    <Select value={selectedCategory} onValueChange={(v) => {
+                                      setSelectedCategory(v);
+                                      // Reset theme when category changes
+                                      const categoryThemes = themes.filter(t => t.category === v);
+                                      if (categoryThemes.length > 0) {
+                                        setConfig(prev => ({ ...prev, themeId: categoryThemes[0].id }));
+                                      }
+                                    }}>
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select theme" />
+                                            <SelectValue placeholder="Select category" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {themes.map(t => (
-                                                <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                                            {categories.map(c => (
+                                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
+                                    <div className="mt-2">
+                                      <Select 
+                                        value={config.themeId} 
+                                        onValueChange={(v) => setConfig({ ...config, themeId: v })}
+                                      >
+                                          <SelectTrigger>
+                                              <SelectValue placeholder="Select theme" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                              {themes
+                                                .filter(t => !selectedCategory || t.category === selectedCategory)
+                                                .map(t => (
+                                                  <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                                                ))}
+                                          </SelectContent>
+                                      </Select>
+                                    </div>
                                 </div>
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">

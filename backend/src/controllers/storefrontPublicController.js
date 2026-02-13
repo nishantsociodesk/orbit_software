@@ -1,5 +1,8 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const Razorpay = require('razorpay');
+const crypto = require('crypto');
+const stripe = require('stripe');
 
 /**
  * Public Storefront API Controller
@@ -391,6 +394,90 @@ exports.getStoreCategories = async (req, res) => {
  * GET /api/storefront/public/:subdomain/theme
  * Get store theme configuration
  */
+/**
+ * GET /api/storefront/public/resolve?domain=:domain
+ * Resolve store by domain/subdomain for storefront hub
+ */
+exports.resolveStoreByDomain = async (req, res) => {
+  try {
+    const { domain } = req.query;
+    
+    if (!domain) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Domain parameter is required' 
+      });
+    }
+    
+    // Handle subdomain format (e.g., "more.localhost:3000" or "more.orbit.com")
+    const subdomain = domain.split('.')[0].toLowerCase();
+    
+    const store = await prisma.store.findUnique({
+      where: { subdomain },
+      include: {
+        websiteCustomization: true,
+        settings: true,
+        themeTemplate: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            category: true
+          }
+        }
+      }
+    });
+    
+    if (!store) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Store not found' 
+      });
+    }
+    
+    if (!store.isActive) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Store is not active' 
+      });
+    }
+
+    // Sanitize payment methods to only include enabled ones and their public keys
+    const paymentMethods = store.settings?.paymentMethods || {};
+    const enabledGateways = {};
+    Object.keys(paymentMethods).forEach(key => {
+      if (paymentMethods[key].enabled) {
+        enabledGateways[key] = {
+          enabled: true,
+          keyId: paymentMethods[key].keyId // Only public key
+        };
+      }
+    });
+    
+    res.json({
+      success: true,
+      store: {
+        id: store.id,
+        name: store.name,
+        subdomain: store.subdomain,
+        customDomain: store.customDomain,
+        theme: store.themeTemplate?.slug || store.theme || 'general',
+        customization: store.websiteCustomization,
+        category: store.category,
+        description: store.description,
+        enabledGateways
+      }
+    });
+  } catch (error) {
+    console.error('Error resolving store by domain:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to resolve store',
+      error: error.message 
+    });
+  }
+};
+
 exports.getStoreTheme = async (req, res) => {
   try {
     const { subdomain } = req.params;
@@ -422,7 +509,6 @@ exports.getStoreTheme = async (req, res) => {
         message: 'Store not found' 
       });
     }
-
     if (!store.isActive) {
       return res.status(403).json({ 
         success: false, 
@@ -441,5 +527,186 @@ exports.getStoreTheme = async (req, res) => {
       message: 'Failed to fetch store theme',
       error: error.message 
     });
+  }
+};
+
+/**
+ * POST /api/storefront/public/:subdomain/orders
+ * Create a new order and initialize payment gateway if needed
+ */
+exports.createPublicOrder = async (req, res) => {
+  try {
+    const { subdomain } = req.params;
+    const { items, customer, total, paymentMethod } = req.body;
+
+    const store = await prisma.store.findUnique({
+      where: { subdomain },
+      include: { settings: true }
+    });
+
+    if (!store) return res.status(404).json({ success: false, message: 'Store not found' });
+
+    // Validate payment method
+    const paymentConfigs = store.settings?.paymentMethods || {};
+    const gatewayConfig = paymentConfigs[paymentMethod];
+
+    if (paymentMethod !== 'cod' && (!gatewayConfig || !gatewayConfig.enabled)) {
+      return res.status(400).json({ success: false, message: `Payment method ${paymentMethod} is not enabled` });
+    }
+
+    // Verify items and calculate real total from database to prevent price manipulation
+    let calculatedTotal = 0;
+    const itemsWithPrices = await Promise.all(items.map(async (item) => {
+      const dbProduct = await prisma.product.findUnique({
+        where: { id: item.id }
+      });
+      if (!dbProduct) throw new Error(`Product ${item.name} no longer available`);
+      
+      const price = Number(dbProduct.price);
+      calculatedTotal += price * item.quantity;
+      
+      return {
+        productId: dbProduct.id,
+        name: dbProduct.name,
+        quantity: item.quantity,
+        price: price
+      };
+    }));
+
+    // Add estimated tax (18% GST typical for India, adjust as needed)
+    const tax = calculatedTotal * 0.18;
+    const finalTotal = calculatedTotal + tax;
+
+    // Initialize payment if not COD
+    let paymentData = {};
+    if (paymentMethod === 'razorpay') {
+      const instance = new Razorpay({
+        key_id: gatewayConfig.keyId,
+        key_secret: gatewayConfig.keySecret,
+      });
+
+      const order = await instance.orders.create({
+        amount: Math.round(finalTotal * 100), // convert to paisa
+        currency: store.settings?.currency || 'INR',
+        receipt: `receipt_${Date.now()}`,
+      });
+
+      paymentData = {
+        orderId: order.id,
+        amount: order.amount,
+        currency: order.currency,
+        key: gatewayConfig.keyId,
+        storeName: store.name // Pass real store name for UI
+      };
+    } else if (paymentMethod === 'stripe') {
+      const stripeInstance = stripe(gatewayConfig.keySecret);
+      const session = await stripeInstance.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: itemsWithPrices.map(item => ({
+          price_data: {
+            currency: store.settings?.currency?.toLowerCase() || 'usd',
+            product_data: { name: item.name },
+            unit_amount: Math.round(item.price * 100),
+          },
+          quantity: item.quantity,
+        })),
+        mode: 'payment',
+        success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.origin}/cart`,
+      });
+      paymentData = { sessionId: session.id, url: session.url };
+    }
+
+    // Create order in database
+    const newOrder = await prisma.order.create({
+      data: {
+        storeId: store.id,
+        orderNumber: `ORD-${Date.now()}`,
+        customerName: `${customer.firstName} ${customer.lastName}`,
+        customerEmail: customer.email,
+        shippingAddress: customer,
+        billingAddress: customer,
+        subtotal: calculatedTotal,
+        tax: tax,
+        shipping: 0,
+        total: finalTotal,
+        status: 'PENDING',
+        paymentStatus: 'PENDING',
+        items: {
+          create: itemsWithPrices
+        }
+      }
+    });
+
+    res.json({
+      success: true,
+      orderId: newOrder.id,
+      ...paymentData
+    });
+
+  } catch (error) {
+    console.error('Error creating public order:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * POST /api/storefront/public/:subdomain/orders/verify
+ * Verify payment signature
+ */
+exports.verifyPublicPayment = async (req, res) => {
+  try {
+    const { subdomain } = req.params;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId, sessionId } = req.body;
+
+    const store = await prisma.store.findUnique({
+      where: { subdomain },
+      include: { settings: true }
+    });
+
+    if (!store) throw new Error('Store not found');
+
+    // Handle Stripe Verification
+    if (sessionId) {
+      const gatewayConfig = store.settings?.paymentMethods?.stripe;
+      if (!gatewayConfig) throw new Error('Stripe config not found');
+      
+      const stripeInstance = stripe(gatewayConfig.keySecret);
+      const session = await stripeInstance.checkout.sessions.retrieve(sessionId);
+      
+      if (session.payment_status === 'paid') {
+        const updatedOrder = await prisma.order.update({
+          where: { id: orderId || session.client_reference_id },
+          data: { paymentStatus: 'PAID', status: 'CONFIRMED' }
+        });
+        return res.json({ success: true, message: "Stripe payment verified", order: updatedOrder });
+      } else {
+        return res.status(400).json({ success: false, message: "Payment not completed" });
+      }
+    }
+
+    // Handle Razorpay Verification
+    const gatewayConfig = store.settings?.paymentMethods?.razorpay;
+    if (!gatewayConfig) throw new Error('Razorpay config not found');
+
+    const sign = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSign = crypto
+      .createHmac("sha256", gatewayConfig.keySecret)
+      .update(sign.toString())
+      .digest("hex");
+
+    if (razorpay_signature === expectedSign) {
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { paymentStatus: 'PAID', status: 'CONFIRMED' }
+      });
+      return res.json({ success: true, message: "Razorpay payment verified" });
+    } else {
+      return res.status(400).json({ success: false, message: "Invalid Razorpay signature" });
+    }
+
+  } catch (error) {
+    console.error('Error verifying payment:', error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };

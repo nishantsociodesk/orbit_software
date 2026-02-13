@@ -17,7 +17,11 @@ const auth = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
-    return res.status(401).json({ message: 'Invalid or expired token' });
+    if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Invalid or expired token' });
+    }
+    console.error('Auth Middleware Error:', err);
+    res.status(500).json({ message: 'Internal server error during authentication' });
   }
 };
 
@@ -39,7 +43,11 @@ const authenticateAdmin = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
-    return res.status(401).json({ message: 'Invalid or expired token' });
+    if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Invalid or expired token' });
+    }
+    console.error('Admin Auth Error:', err);
+    res.status(500).json({ message: 'Internal server error during authentication' });
   }
 };
 
