@@ -2,6 +2,23 @@ const { prisma } = require('../config/database');
 const bcrypt = require('bcryptjs');
 const { getDefaultCategoryConfig, normalizeCategory } = require('../utils/categoryConfigs');
 
+// Category to upfront template port mapping
+const CATEGORY_UPFRONT_PORTS = {
+  'Toys': 3004,
+  'Fashion': 3005,
+  'Electronics': 3006,
+  'Food': 3007,
+  'Footwear': 3008,
+  'Perfume': 3009,
+  'Beauty': 3010,
+  'Jewellery': 3017
+};
+
+const getCategoryUpfrontPort = (category) => {
+  const normalizedCategory = normalizeCategory(category);
+  return CATEGORY_UPFRONT_PORTS[normalizedCategory] || 3004; // Default to toys port
+};
+
 /**
  * Create a new merchant with credentials, store, and website
  * POST /api/admin/provision
@@ -286,6 +303,7 @@ const createMerchant = async (req, res, next) => {
         storefrontUrl: customDomain 
           ? `http://${customDomain}` 
           : `http://${subdomain}.localhost:3000`,
+        upfrontTemplateUrl: `http://localhost:${getCategoryUpfrontPort(normalizedCategory)}`,
         createdAt: result.user.createdAt
       }
     });
@@ -420,6 +438,7 @@ const getMerchantCredentials = async (req, res, next) => {
         storefrontUrl: store?.customDomain 
           ? `http://${store.customDomain}` 
           : `http://${store?.subdomain}.localhost:3000`,
+        upfrontTemplateUrl: `http://localhost:${getCategoryUpfrontPort(store?.category)}`,
         createdAt: credentials.createdAt
       }
     });

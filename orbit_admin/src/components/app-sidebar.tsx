@@ -12,6 +12,7 @@ import {
   FileTextIcon,
   FolderIcon,
   HelpCircleIcon,
+  UserPlus,
   LayoutDashboardIcon,
   ListIcon,
   PackageIcon,
@@ -105,6 +106,11 @@ const data = {
       title: "Products",
       url: "/dashboard/products",
       icon: FileTextIcon,
+    },
+    {
+      title: "Leads",
+      url: "/dashboard/leads",
+      icon: UserPlus,
     },
   ],
   navClouds: [

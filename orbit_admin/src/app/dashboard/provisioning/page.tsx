@@ -665,10 +665,10 @@ export default function ProvisioningPage() {
                                       <Button
                                         variant="ghost"
                                         size="sm"
-                                        onClick={() => window.open(cred.storefrontUrl, "_blank")}
+                                        onClick={() => window.open(cred.upfrontTemplateUrl || cred.storefrontUrl, "_blank")}
                                       >
                                         <ExternalLink className="w-4 h-4 mr-1" />
-                                        Store
+                                        Category Template
                                       </Button>
                                     </div>
                                   </TableCell>
@@ -770,6 +770,38 @@ export default function ProvisioningPage() {
                             <ExternalLink className="w-4 h-4" />
                           </Button>
                         </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label>Category Template Preview</Label>
+                        <div className="flex items-center gap-2">
+                          <Input value={createdMerchant.upfrontTemplateUrl} readOnly />
+                          <Button
+                            variant="outline"
+                            onClick={() => window.open(createdMerchant.upfrontTemplateUrl, "_blank")}
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Preview the template design for {createdMerchant.category} category
+                        </p>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label>Category Template Preview</Label>
+                        <div className="flex items-center gap-2">
+                          <Input value={createdMerchant.upfrontTemplateUrl} readOnly />
+                          <Button
+                            variant="outline"
+                            onClick={() => window.open(createdMerchant.upfrontTemplateUrl, "_blank")}
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Preview the template design for {createdMerchant.category} category
+                        </p>
                       </div>
 
                       <Alert>

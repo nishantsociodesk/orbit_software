@@ -473,6 +473,7 @@ export type MerchantCredential = {
   mustChangePassword: boolean;
   dashboardUrl: string;
   storefrontUrl: string;
+  upfrontTemplateUrl: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -504,6 +505,7 @@ export const createMerchant = (payload: {
       category: string;
       dashboardUrl: string;
       storefrontUrl: string;
+      upfrontTemplateUrl: string;
       createdAt: string;
     };
   }>("/api/admin/provision", {
