@@ -1,6 +1,16 @@
 const logisticsService = require('../services/logisticsService');
 const LogisticsProvider = require('../models/mongoose/LogisticsProvider');
 
+exports.testConnection = async (req, res, next) => {
+  try {
+    const { storeId } = req.params;
+    const result = await logisticsService.testConnection(storeId);
+    res.json({ success: true, result });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.getCouriers = async (req, res, next) => {
   try {
     const { storeId } = req.params;

@@ -7,7 +7,8 @@ const {
   getSummary,
   configureProvider,
   getProviderStatus,
-  createOrder
+  createOrder,
+  testConnection
 } = require('../controllers/logisticsController');
 
 const router = express.Router();
@@ -18,5 +19,6 @@ router.post('/:storeId/summary', auth, rbac([ROLES.MERCHANT, ROLES.ADMIN]), getS
 router.post('/:storeId/configure', auth, rbac([ROLES.MERCHANT, ROLES.ADMIN]), configureProvider);
 router.get('/:storeId/status', auth, rbac([ROLES.MERCHANT, ROLES.ADMIN]), getProviderStatus);
 router.post('/:storeId/create-order', auth, rbac([ROLES.MERCHANT, ROLES.ADMIN]), createOrder);
+router.get('/:storeId/test', auth, rbac([ROLES.MERCHANT, ROLES.ADMIN]), testConnection);
 
 module.exports = router;
