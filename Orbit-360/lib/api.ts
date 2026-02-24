@@ -1,0 +1,121 @@
+const getBaseUrl = () => {
+  let url = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  return url.endsWith("/api") ? url : `${url}/api`;
+};
+
+const API_BASE_URL = getBaseUrl();
+
+
+async function fetcher(url: string, options: any = {}) {
+  // Add token from localStorage if available
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      options.headers = { 
+        ...options.headers, 
+        'Authorization': `Bearer ${token}` 
+      };
+    }
+  }
+  
+  const response = await fetch(`${API_BASE_URL}${url}`, options);
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: "An error occurred" }));
+    throw new Error(error.message || "Request failed");
+  }
+  return response.json();
+}
+
+export async function getStoreSettings(storeId: string) {
+  return fetcher(`/stores/${storeId}/settings`);
+}
+
+export async function getMetaStatus() {
+  return fetcher(`/meta/status`);
+}
+
+export async function updateStoreSettings(storeId: string, settings: any) {
+  return fetcher(`/stores/${storeId}/settings`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(settings),
+  });
+}
+
+export async function getStoreAnalytics(storeId: string) {
+  return fetcher(`/stores/${storeId}/analytics`);
+}
+
+export async function getStoreOrders(storeId: string) {
+  return fetcher(`/orders/store/${storeId}`);
+}
+
+export async function getStoreProducts(storeId: string) {
+  return fetcher(`/products?storeId=${storeId}`);
+}
+
+export async function createStoreProduct(storeId: string, productData: any) {
+  return fetcher(`/products?storeId=${storeId}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(productData),
+  });
+}
+
+export async function getStoreCustomers(storeId: string) {
+  return fetcher(`/stores/${storeId}/customers`);
+}
+
+export async function getLogisticsStatus(storeId: string) {
+  return fetcher(`/logistics/${storeId}/status`).catch(() => ({ success: false, configured: false }));
+}
+
+export async function configureLogistics(storeId: string, settings: any) {
+  return fetcher(`/logistics/${storeId}/configure`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(settings),
+  });
+}
+
+export async function testLogisticsConnection(storeId: string) {
+  return fetcher(`/logistics/${storeId}/test`);
+}
+
+export async function getLogisticsCouriers(storeId: string) {
+  return fetcher(`/logistics/${storeId}/couriers`);
+}
+
+export async function trackShipment(storeId: string, waybill: string) {
+  return fetcher(`/logistics/${storeId}/track`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ waybill }),
+  });
+}
+
+export async function getShipmentSummary(storeId: string, waybill: string) {
+  return fetcher(`/logistics/${storeId}/summary`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ waybill }),
+  });
+}
+
+export async function getStoreCustomization(storeId: string) {
+  return fetcher(`/stores/${storeId}/customization`);
+}
+
+export async function updateStoreCustomization(storeId: string, customization: any) {
+  return fetcher(`/stores/${storeId}/customization`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(customization),
+  });
+}
+
+export async function deleteStoreProduct(productId: string) {
+  return fetcher(`/products/${productId}`, {
+    method: "DELETE",
+  });
+}
