@@ -307,12 +307,88 @@ const seed = async () => {
         }
     }
 
+    console.log('Seeding Demo Merchants...');
+    const demoMerchants = [
+      {
+        name: 'Elite Fashion Hub',
+        email: 'fashion@demo.com',
+        subdomain: 'elite-fashion',
+        category: 'CLOTHING',
+        theme: 'fashion_upfront'
+      },
+      {
+        name: 'Tech Galaxy',
+        email: 'tech@demo.com',
+        subdomain: 'tech-galaxy',
+        category: 'ELECTRONICS',
+        theme: 'electronics_1'
+      },
+      {
+        name: 'Essence Perfumery',
+        email: 'perfume@demo.com',
+        subdomain: 'essence',
+        category: 'PERFUME',
+        theme: 'perfume-upfront'
+      },
+      {
+        name: 'Organic Glow',
+        email: 'beauty@demo.com',
+        subdomain: 'glow',
+        category: 'COSMETICS',
+        theme: 'beauty-personal-care-upfront'
+      },
+      {
+        name: 'Toy Kingdom',
+        email: 'toys@demo.com',
+        subdomain: 'toy-kingdom',
+        category: 'TOYSTORE',
+        theme: 'toys upfront'
+      }
+    ];
+
+    const hashedPassword = await bcrypt.hash('Demo@123', 10);
+
+    for (const merchant of demoMerchants) {
+      try {
+        const existing = await prisma.user.findUnique({ where: { email: merchant.email } });
+        if (!existing) {
+          const user = await prisma.user.create({
+            data: {
+              email: merchant.email,
+              password: hashedPassword,
+              fullName: merchant.name,
+              role: 'MERCHANT',
+              emailVerified: true,
+              isActive: true
+            }
+          });
+
+          const theme = await prisma.theme.findUnique({ where: { slug: merchant.theme } });
+
+          await prisma.store.create({
+            data: {
+              userId: user.id,
+              name: merchant.name,
+              subdomain: merchant.subdomain,
+              description: `${merchant.name} - Demo Store`,
+              theme: merchant.theme,
+              themeId: theme?.id,
+              category: merchant.category,
+              isActive: true,
+              provisioningStatus: 'COMPLETED',
+              onboardingStatus: 'COMPLETED'
+            }
+          });
+
+          console.log(`Created demo merchant: ${merchant.name}`);
+        }
+      } catch (e) {
+        console.error(`Error seeding merchant ${merchant.name}:`, e.message);
+      }
+    }
+
     console.log('Seed completed');
-
-
-
   } catch (err) {
-
     console.error(err);
   } finally {
     await disconnectMongo();
@@ -321,6 +397,7 @@ const seed = async () => {
 };
 
 seed();
+
 
 
 
